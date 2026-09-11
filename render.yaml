@@ -1,0 +1,63 @@
+# Render Blueprint — see README.md "Deploying to Render" for the full walkthrough.
+# Render reads this automatically when you create a Blueprint from this repo.
+# Fields marked `sync: false` are secrets you paste into the Render dashboard yourself;
+# they are never stored in this file or in git.
+services:
+  - type: web
+    name: rangdhaara
+    runtime: python
+    plan: starter          # cheapest plan that supports a persistent disk
+    region: singapore      # closest Render region to India
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py serve --forwarded-allow-ips=*
+    healthCheckPath: /
+    autoDeployTrigger: commit
+    disk:
+      name: rangdhaara-data
+      mountPath: /var/data
+      sizeGB: 1             # increase later if course videos fill it up
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PUBLIC_BASE_URL
+        value: https://rangdhara.in
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data/data
+      - key: STORAGE_DIR
+        value: /var/data/storage
+      - key: UPLOADS_DIR
+        value: /var/data/uploads
+      - key: STORE_NAME
+        value: Rangdhaara Art Studio
+      - key: WHATSAPP_NUMBER
+        value: "918080007684"
+      - key: INSTAGRAM_HANDLE
+        value: rangdhaara_
+      - key: ORIGIN_PINCODE
+        value: "431001"
+      # Payments: manual UPI to start (no gateway account needed yet).
+      # Switch PAYMENT_PROVIDER to razorpay or cashfree once that's set up — see the README.
+      - key: PAYMENT_PROVIDER
+        value: manual_upi
+      - key: UPI_VPA
+        sync: false
+      - key: UPI_PAYEE_NAME
+        value: Rangdhaara Art Studio
+      # Email: an address at your own domain (Google Workspace), used to send OTPs, receipts,
+      # shipping updates, etc. An "app password" (not the mailbox's normal login password) — see README.
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: STORE_ADMIN_EMAIL
+        sync: false

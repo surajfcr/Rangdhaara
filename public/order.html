@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Your order · Rangdhaara</title>
+  <link rel="icon" type="image/jpeg" href="/assets/images/profile_avatar.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { cream: '#FDFBF7', sand: '#EFE7DD', terracotta: { DEFAULT: '#C86D51', dark: '#9E4B33', light: '#FDF1EE' },
+        sunflower: { DEFAULT: '#F4C430', light: '#FEF9E7' }, charcoal: { DEFAULT: '#1F2421', light: '#4A524D' } },
+      fontFamily: { serif: ['Playfair Display', 'Georgia', 'serif'], sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'] } } } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="module" src="/assets/js/order/main.js"></script>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+  <header class="header-glass">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-2.5">
+        <img src="/assets/images/profile_avatar.jpg" alt="" class="w-9 h-9 rounded-full object-cover">
+        <span class="font-serif text-xl font-bold">Rangdhaara</span>
+      </a>
+      <a href="/" class="btn btn-ghost btn-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i>Back to the shop</a>
+    </div>
+  </header>
+  <main id="order-root" class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-10" aria-live="polite">
+    <div class="skeleton h-10 w-72"></div>
+    <div class="skeleton h-5 w-96 mt-4"></div>
+    <div class="grid lg:grid-cols-[1fr_22rem] gap-8 mt-8"><div class="skeleton h-64"></div><div class="skeleton h-64"></div></div>
+  </main>
+  <footer class="border-t border-sand py-6 text-center text-xs text-charcoal-light">© Rangdhaara Art Studio</footer>
+</body>
+</html>

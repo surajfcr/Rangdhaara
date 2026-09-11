@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>My courses · Rangdhaara Art Academy</title>
+  <link rel="icon" type="image/jpeg" href="/assets/images/profile_avatar.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { cream: '#FDFBF7', sand: '#EFE7DD', terracotta: { DEFAULT: '#C86D51', dark: '#9E4B33', light: '#FDF1EE' },
+        sunflower: { DEFAULT: '#F4C430', light: '#FEF9E7' }, charcoal: { DEFAULT: '#1F2421', light: '#4A524D' } },
+      fontFamily: { serif: ['Playfair Display', 'Georgia', 'serif'], sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'] } } } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="module" src="/assets/js/learn/main.js"></script>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+  <header class="header-glass sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <a href="/" class="flex items-center gap-2.5 shrink-0">
+          <img src="/assets/images/profile_avatar.jpg" alt="" class="w-9 h-9 rounded-full object-cover">
+          <span class="font-serif text-xl font-bold hidden sm:inline">Rangdhaara</span>
+        </a>
+        <span class="text-sand hidden sm:inline" aria-hidden="true">/</span>
+        <a href="/my-courses" class="text-sm font-semibold truncate hover:text-terracotta-dark">My courses</a>
+      </div>
+      <div id="learn-account" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+  <main id="learn-root" class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div class="skeleton h-9 w-60"></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"><div class="skeleton h-72"></div><div class="skeleton h-72"></div><div class="skeleton h-72 hidden lg:block"></div></div>
+  </main>
+</body>
+</html>

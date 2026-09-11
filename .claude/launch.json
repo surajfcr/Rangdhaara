@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "rangdhaara-dev",
+      "runtimeExecutable": "C:/Users/Suraj Patil/AppData/Local/Packages/Claude_pzs8sxrjxfjjc/LocalCache/Local/Rangdhaara/venv/Scripts/python.exe",
+      "runtimeArgs": ["C:/Users/Suraj Patil/AppData/Local/Packages/Claude_pzs8sxrjxfjjc/LocalCache/Local/Rangdhaara/devserver.py"],
+      "port": 8765
+    }
+  ]
+}

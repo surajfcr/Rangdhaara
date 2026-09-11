@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Rangdhaara Admin</title>
+  <link rel="icon" type="image/jpeg" href="/assets/images/profile_avatar.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { cream: '#FDFBF7', sand: '#EFE7DD', terracotta: { DEFAULT: '#C86D51', dark: '#9E4B33', light: '#FDF1EE' },
+        sunflower: { DEFAULT: '#F4C430', light: '#FEF9E7' }, charcoal: { DEFAULT: '#1F2421', light: '#4A524D' } },
+      fontFamily: { serif: ['Playfair Display', 'Georgia', 'serif'], sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'] } } } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/admin.css">
+  <script type="module" src="/assets/js/admin/app.js"></script>
+</head>
+<body class="antialiased admin-body">
+  <div id="admin-root">
+    <div class="min-h-screen grid place-items-center"><span class="spinner text-terracotta" aria-label="Loading"></span></div>
+  </div>
+</body>
+</html>
