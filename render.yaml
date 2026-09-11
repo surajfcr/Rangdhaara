@@ -5,13 +5,12 @@
 services:
   - type: web
     name: rangdhaara
-    runtime: python
+    env: python
     plan: starter          # cheapest plan that supports a persistent disk
     region: singapore      # closest Render region to India
     buildCommand: pip install -r requirements.txt
     startCommand: python manage.py serve --forwarded-allow-ips=*
     healthCheckPath: /
-    autoDeployTrigger: commit
     disk:
       name: rangdhaara-data
       mountPath: /var/data
