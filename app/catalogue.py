@@ -65,7 +65,9 @@ def serialize_product(conn, product: dict, *, admin: bool = False, categories: d
         "reviews_count": product["reviews_count"],
         "compare_at_paise": product["compare_at_paise"],
         "price_paise": min(prices) if prices else None,
-        "image": images[0]["url"] if images else "",
+        # A photo isn't required to publish, so this can't be "" — every product card and cart
+        # row on the site assumes an image src, and an empty one renders as a broken-image icon.
+        "image": images[0]["url"] if images else "/assets/images/profile_avatar.jpg",
         "media": media,
         "variants": variants,
         "in_stock": any(v["available"] is None or v["available"] > 0 for v in variants),

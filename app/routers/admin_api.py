@@ -315,8 +315,8 @@ def publish_problems(conn, product: dict) -> list[str]:
         problems.append("Under “Price & pieces in stock”, add a size, tick Offered, and press Save on that row.")
     if any(v["price_paise"] <= 0 for v in variants):
         problems.append("Under “Price & pieces in stock”, fill in Price (₹) for every size, then press Save on that row.")
-    if not scalar(conn, "SELECT 1 FROM product_media WHERE product_id = ? AND kind = 'image'", (product["id"],)):
-        problems.append("Add at least one photo.")
+    # A photo is encouraged (the store shows a placeholder without one) but not required — the
+    # studio wants only name, description, price and stock to stand in the way of publishing.
     if product["kind"] == "course" and not scalar(
         conn, "SELECT 1 FROM lessons l JOIN course_modules m ON m.id = l.module_id JOIN courses c ON c.id = m.course_id "
               "WHERE c.product_id = ? AND l.video_key IS NOT NULL", (product["id"],)):
