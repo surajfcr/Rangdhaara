@@ -59,7 +59,7 @@ function signInScreen() {
     <div class="min-h-screen grid place-items-center p-6">
       <div class="panel p-8 max-w-sm w-full text-center">
         <img src="/assets/images/profile_avatar.jpg" alt="" class="w-14 h-14 rounded-full mx-auto object-cover">
-        <h1 class="font-serif text-2xl font-bold mt-4">Rangdhaara admin</h1>
+        <h1 class="font-serif text-2xl font-bold mt-4">Rangdhara admin</h1>
         <p class="text-sm text-charcoal-light mt-2">${signInNote || "Sign in with your staff or owner account."}</p>
         <button type="button" class="btn btn-primary w-full mt-6" data-admin-signin>Sign in</button>
         <a href="/" class="link text-sm mt-4 inline-block">Back to the store</a>
@@ -87,7 +87,7 @@ function shell() {
       <aside class="admin-side p-4 gap-6" aria-label="Admin navigation">
         <a href="#today" class="flex items-center gap-2.5 px-2 pt-1">
           <img src="/assets/images/profile_avatar.jpg" alt="" class="w-9 h-9 rounded-full object-cover">
-          <span><span class="block font-serif text-lg font-bold text-white leading-none">Rangdhaara</span>
+          <span><span class="block font-serif text-lg font-bold text-white leading-none">Rangdhara</span>
           <span class="block text-[10px] uppercase tracking-[0.16em] text-white/50 mt-1">Admin</span></span>
         </a>
         <nav class="admin-nav flex-1 space-y-5 overflow-y-auto">
@@ -111,7 +111,7 @@ function shell() {
       <div class="admin-main">
         <div class="admin-top lg:hidden px-4 h-14 flex items-center gap-3">
           <button type="button" class="icon-btn" data-menu aria-label="Open menu"><i data-lucide="menu" class="w-5 h-5"></i></button>
-          <span class="font-serif font-bold">Rangdhaara admin</span>
+          <span class="font-serif font-bold">Rangdhara admin</span>
         </div>
         <main id="view" class="p-4 sm:p-8 max-w-[92rem]"></main>
       </div>

@@ -85,14 +85,14 @@ async function courses(el, ctx) {
           ${field("Level", html`<select class="input" name="level">${["Beginner", "Intermediate", "Advanced", "All levels"].map((lv) => html`<option>${lv}</option>`)}</select>`)}
         </div>
         ${field("Description", html`<textarea class="input" name="description" rows="3" placeholder="What students will make and learn"></textarea>`)}
-        ${field("Instructor", html`<input class="input" name="instructor" value="Rangdhaara Studio">`)}
+        ${field("Instructor", html`<input class="input" name="instructor" value="Rangdhara Studio">`)}
         ${field("Cover photo", html`<input class="input !py-2" type="file" name="photo" accept="image/jpeg,image/png,image/webp">`, "Shown on the course card in the store.")}`,
       onSubmit: async (v, form) => {
         const product = await api("/admin/products", { method: "POST", body: {
           kind: "course", title: v.title, description: v.description, price_paise: v.price ? toPaise(v.price) || 0 : 0 } });
         const notes = [];
         try {
-          await api(`/admin/courses/${product.course_id}`, { method: "PATCH", body: { level: v.level, instructor: v.instructor || "Rangdhaara Studio" } });
+          await api(`/admin/courses/${product.course_id}`, { method: "PATCH", body: { level: v.level, instructor: v.instructor || "Rangdhara Studio" } });
         } catch (err) { notes.push(err.message); }
         const photo = form.photo.files[0];
         if (photo) {

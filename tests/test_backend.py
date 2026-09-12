@@ -1,4 +1,4 @@
-"""End-to-end checks for the Rangdhaara backend.
+"""End-to-end checks for the Rangdhara backend.
 
 Run from the project folder:
     python -m unittest discover -s tests -v
@@ -188,7 +188,7 @@ class SurfaceTests(Case):
     def test_coupons_are_checked_on_the_server(self):
         c = client()
         items = [{"variant_id": variant_of("rtb-ta-03"), "qty": 1}]
-        good = post(c, "/api/v1/cart/price", {"items": items, "coupon_code": "rangdhaara10"}).json()
+        good = post(c, "/api/v1/cart/price", {"items": items, "coupon_code": "rangdhara10"}).json()
         self.assertTrue(good["coupon"]["applied"])
         self.assertEqual(good["discount_paise"], 32000)
         bad = post(c, "/api/v1/cart/price", {"items": items, "coupon_code": "FREEMONEY"}).json()

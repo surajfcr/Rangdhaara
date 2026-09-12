@@ -1,1 +1,1 @@
-"""Rangdhaara storefront and Art Academy backend."""
+"""Rangdhara storefront and Art Academy backend."""

@@ -78,7 +78,7 @@ def _seed_catalogue(conn) -> int:
         sort += 1
         _insert_product(conn, item, kind="course", category="masterclasses", active=False, sort=sort, on_hand=None)
         conn.execute("INSERT INTO courses (product_id, level, instructor) VALUES (?, ?, ?)",
-                     (item["id"], item["level"], "Rangdhaara Studio"))
+                     (item["id"], item["level"], "Rangdhara Studio"))
     for item in seed_data.WORKSHOPS:
         sort += 1
         _insert_product(conn, item, kind="workshop", category="workshops", active=False, sort=sort, on_hand=None)

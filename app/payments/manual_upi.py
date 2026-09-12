@@ -25,7 +25,7 @@ class ManualUpiProvider(Provider):
             "pn": settings.upi_payee_name,
             "am": amount,
             "cu": "INR",
-            "tn": f"Rangdhaara {order['id']}",
+            "tn": f"Rangdhara {order['id']}",
         })
         qr = segno.make(uri, error="m").svg_inline(scale=5, dark="#1C1917", light="#FFFFFF", border=2)
         return order["id"], {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rangdhaara management commands.
+"""Rangdhara management commands.
 
   python manage.py setup                prepare .env, the database and the catalogue (safe to re-run)
   python manage.py serve [--reload]     start the website
@@ -128,7 +128,7 @@ def cmd_serve(args) -> None:
 
     from app.config import settings
 
-    print(f"\n  Rangdhaara is running:  {settings.public_base_url}\n  Admin panel:            {settings.public_base_url}/admin\n"
+    print(f"\n  Rangdhara is running:  {settings.public_base_url}\n  Admin panel:            {settings.public_base_url}/admin\n"
           "  Press Ctrl+C to stop.\n", flush=True)
     uvicorn.run("app.main:app", host=settings.host, port=settings.port, reload=args.reload, proxy_headers=True,
                 forwarded_allow_ips=args.forwarded_allow_ips, log_level="info")
@@ -170,7 +170,7 @@ def cmd_send_test_email(args) -> None:
 
     conn = connect()
     try:
-        emails.enqueue(conn, "test", args.to, "Rangdhaara test email", "<p>Email delivery from your store is working.</p>")
+        emails.enqueue(conn, "test", args.to, "Rangdhara test email", "<p>Email delivery from your store is working.</p>")
         emails.deliver_pending(conn)
         row = one(conn, "SELECT status, last_error FROM email_outbox WHERE kind = 'test' ORDER BY id DESC LIMIT 1")
     finally:
@@ -184,7 +184,7 @@ def cmd_send_test_email(args) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Rangdhaara management commands")
+    parser = argparse.ArgumentParser(description="Rangdhara management commands")
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("setup")
     p.add_argument("--no-input", action="store_true")

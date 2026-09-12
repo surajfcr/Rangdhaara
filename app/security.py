@@ -19,7 +19,8 @@ COMMON_PASSWORDS = {
     "12345678", "123456789", "1234567890", "password", "password1", "password123", "passw0rd",
     "qwerty123", "qwertyuiop", "11111111", "00000000", "abcd1234", "iloveyou", "welcome1",
     "admin123", "pass1234", "letmein1", "sunshine", "princess", "football", "baseball",
-    "india123", "india@123", "rangdhaara", "rangdhaara123", "12341234", "87654321", "asdfghjk",
+    "india123", "india@123", "rangdhaara", "rangdhaara123", "rangdhara", "rangdhara123",
+    "12341234", "87654321", "asdfghjk",
 }
 
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s]+\.[A-Za-z]{2,}$")

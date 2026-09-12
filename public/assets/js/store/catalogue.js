@@ -387,7 +387,7 @@ function paintDialog() {
         ${["physical", "kit"].includes(p.kind) ? pinChecker() : ""}
         <div class="mt-auto pt-2 flex flex-col gap-2">
           <button type="button" class="btn btn-primary btn-lg w-full" data-add-selected ${unavailable ? "disabled" : ""}>${cta}</button>
-          <a class="btn btn-ghost w-full" target="_blank" rel="noopener" href="${whatsappLink(`Hi Rangdhaara, I have a question about “${p.title}”.`)}">
+          <a class="btn btn-ghost w-full" target="_blank" rel="noopener" href="${whatsappLink(`Hi Rangdhara, I have a question about “${p.title}”.`)}">
             <i data-lucide="message-circle" class="w-4 h-4"></i>Ask a question on WhatsApp
           </a>
         </div>

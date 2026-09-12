@@ -1,7 +1,7 @@
-# Rangdhaara Art Studio & Academy
+# Rangdhara Art Studio & Academy
 
 The online store for ready-to-buy textured art, clay decor and DIY kits, plus the
-Rangdhaara Art Academy (video masterclasses and live workshops), with an admin panel
+Rangdhara Art Academy (video masterclasses and live workshops), with an admin panel
 for orders, stock, courses and revenue.
 
 - **Backend:** Python 3.11+, FastAPI, SQLite
@@ -81,7 +81,7 @@ Open `/admin` and sign in with the owner account.
 
 ## Going live at rangdhara.in
 
-This deploys to **Render** (`render.yaml` in this repo defines the whole service) with **Google Workspace** for `contact@rangdhara.in` and `support@rangdhara.in`. `python manage.py check` lists what's still missing at any point; the server refuses to start with `APP_ENV=production` until everything required is set.
+This deploys to **Render** (`render.yaml` in this repo defines the whole service). Email starts on a free Gmail address and can move to a proper `@rangdhara.in` mailbox later — see step 3. `python manage.py check` lists what's still missing at any point; the server refuses to start with `APP_ENV=production` until everything required is set.
 
 ### 1. Put the code on GitHub
 
@@ -103,16 +103,17 @@ Render deploys from a Git repository, so the code needs to live on GitHub first.
 4. Once it's live at the `.onrender.com` address Render gives you, add your custom domain: service **Settings → Custom Domains → Add** → enter `rangdhara.in` (and `www.rangdhara.in` if you want that to work too). Render then shows you exactly which DNS record(s) to add — usually one **A** record for `rangdhara.in` and one **CNAME** for `www`.
 5. In [GoDaddy's DNS manager](https://dcc.godaddy.com/domains) for `rangdhara.in`, add exactly the records Render showed you. DNS changes can take up to a few hours to take effect; Render issues the HTTPS certificate automatically once it sees the domain pointed at it.
 
-### 3. Set up contact@ and support@ (Google Workspace)
+### 3. Set up email — free Gmail now, `@rangdhara.in` later
 
-1. Sign up at [workspace.google.com](https://workspace.google.com) using `rangdhara.in` as the domain.
-2. Google will ask you to prove you own the domain — it gives you a **TXT record** to add in GoDaddy's DNS manager. Add it, then click verify in Workspace.
-3. In the Workspace admin console, create the two mailboxes: `contact@rangdhara.in` and `support@rangdhara.in`.
-4. Add the **MX records** Workspace shows you (for receiving mail) and the **SPF TXT record** it recommends (so your emails don't land in spam) — both go in GoDaddy's DNS manager the same way.
-5. For the app to *send* email as `contact@rangdhara.in`, sign in to that mailbox and create an **app password**: Google Account → Security → 2-Step Verification (turn it on first) → App passwords. Put that address in `SMTP_USER` and the generated app password in `SMTP_PASSWORD` in Render — **not** the mailbox's normal login password.
-6. Set `MAIL_FROM` to `Rangdhaara Art Studio <contact@rangdhara.in>` and `STORE_ADMIN_EMAIL` to `support@rangdhaara.in` (where new-order and needs-review alerts go — you can point this at either mailbox).
+**Now (free):** create a normal Gmail address (e.g. `support.rangdhara@gmail.com`) at [accounts.google.com/signup](https://accounts.google.com/signup). Sign in to it → Google Account → **Security** → turn on **2-Step Verification** → search for **"App passwords"** → create one. Then in Render:
+- `SMTP_USER` = that Gmail address
+- `SMTP_PASSWORD` = the 16-character app password (not the account's normal login password)
+- `MAIL_FROM` = `Rangdhara Art Studio <that address>`
+- `STORE_ADMIN_EMAIL` = the same address (where new-order and needs-review alerts go)
 
-`support@rangdhaara.in` needs no app setup at all — Rangdhaara just reads it like any inbox (Gmail app, webmail, phone).
+One inbox is enough at this stage — it both sends automated mail and receives replies/questions.
+
+**Later (paid, when it's worth it):** buy Google Workspace or Zoho Mail for `rangdhara.in`, create `contact@rangdhara.in` and `support@rangdhara.in`, verify the domain (a TXT record in GoDaddy) and add the MX + SPF records it gives you — then just swap the 4 values above for the new addresses in Render. No code or redeploy needed.
 
 ### 4. Create the real admin account
 
@@ -120,7 +121,7 @@ Once deployed, open a **Shell** from the Render service dashboard and run:
 ```bash
 python manage.py create-admin
 ```
-This is the account you (or Rangdhaara, using her own email) sign in with at `https://rangdhara.in/admin`. Run `python manage.py create-admin` again with a different email to give her a separate login — see [Using the admin panel](#using-the-admin-panel).
+This is the account you (or Rangdhara, using her own email) sign in with at `https://rangdhara.in/admin`. Run `python manage.py create-admin` again with a different email to give her a separate login — see [Using the admin panel](#using-the-admin-panel).
 
 ### 5. Payments
 

@@ -182,7 +182,7 @@ def mock_gateway(gateway_order_id: str, conn=Depends(get_db)):
  button:focus-visible{{outline:3px solid #F59E0B;outline-offset:2px}}
 </style></head><body><main class="card">
 <span class="tag">TEST GATEWAY · NO REAL MONEY</span>
-<h1>Rangdhaara order #{e(row['order_id'])}</h1>
+<h1>Rangdhara order #{e(row['order_id'])}</h1>
 <div class="amt">{rupees(row['amount_paise'])}</div>
 <p class="muted">This page stands in for Razorpay or Cashfree during development. Pick what the bank does.</p>
 {'<p><strong>This test payment is already complete.</strong></p>' if done else ''}
@@ -238,7 +238,7 @@ def error_page(status: int) -> HTMLResponse:
     }
     title, detail = messages.get(status, ("Something went wrong", "Please try again in a moment."))
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title} · Rangdhaara</title><style>body{{margin:0;min-height:100vh;display:grid;place-items:center;background:#FAF6F0;color:#23201D;
+<title>{title} · Rangdhara</title><style>body{{margin:0;min-height:100vh;display:grid;place-items:center;background:#FAF6F0;color:#23201D;
 font-family:"Segoe UI",system-ui,sans-serif;padding:20px;text-align:center}}h1{{font-family:Georgia,serif;font-size:28px;margin:0 0 8px}}
 a{{color:#B85C38;font-weight:600}}</style></head><body><main><h1>{title}</h1><p>{detail}</p><p><a href="/">Back to the studio</a></p></main></body></html>"""
     return HTMLResponse(page, status_code=status)

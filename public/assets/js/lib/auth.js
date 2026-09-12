@@ -206,7 +206,7 @@ async function submit(e) {
       if (res.reset_token) {
         go("newpass", { resetToken: res.reset_token });
       } else {
-        finish(res.user, flow.purpose === "signup" ? `Welcome to Rangdhaara, ${firstName(res.user)}.` : `Signed in as ${res.user.email}.`);
+        finish(res.user, flow.purpose === "signup" ? `Welcome to Rangdhara, ${firstName(res.user)}.` : `Signed in as ${res.user.email}.`);
       }
     } else if (form.dataset.form === "newpass") {
       if (data.password !== data.confirm_password) {

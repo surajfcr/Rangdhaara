@@ -327,6 +327,6 @@ WORKSHOPS = [
 
 # Codes the old checkout accepted. Kept so nothing a customer was told stops working.
 COUPONS = [
-    {"code": "RANGDHAARA10", "kind": "percent", "value": 10},
+    {"code": "RANGDHARA10", "kind": "percent", "value": 10},
     {"code": "WELCOME50", "kind": "flat", "value": 5000},
 ]

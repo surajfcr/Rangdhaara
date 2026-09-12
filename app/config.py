@@ -71,7 +71,7 @@ class Settings:
         self.session_days = _env_int("SESSION_DAYS", 30)
         self.staff_idle_hours = _env_int("STAFF_IDLE_HOURS", 12)
 
-        self.store_name = _env("STORE_NAME", "Rangdhaara Art Studio")
+        self.store_name = _env("STORE_NAME", "Rangdhara Art Studio")
         self.store_admin_email = _env("STORE_ADMIN_EMAIL")
         self.whatsapp_number = _env("WHATSAPP_NUMBER", "918080007684")
         self.instagram_handle = _env("INSTAGRAM_HANDLE", "rangdhaara_")

@@ -134,4 +134,4 @@ def certificate(course_id: int, user=Depends(require_user), conn=Depends(get_db)
     with transaction(conn):
         cert = get_or_issue(conn, enrollment, user["full_name"] or user["email"].split("@")[0], course["title"])
     return FileResponse(resolve_key(cert["storage_key"]), media_type="application/pdf",
-                        filename=f"Rangdhaara-certificate-{cert['id']}.pdf", headers={"Cache-Control": "private, no-store"})
+                        filename=f"Rangdhara-certificate-{cert['id']}.pdf", headers={"Cache-Control": "private, no-store"})

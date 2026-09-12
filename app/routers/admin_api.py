@@ -375,7 +375,7 @@ def create_product(body: ProductCreateIn, request: Request, user=Depends(require
                  None if body.kind == "course" else (body.on_hand if body.on_hand is not None else 0), now, now),
             )
         if body.kind == "course":
-            conn.execute("INSERT INTO courses (product_id, instructor) VALUES (?, ?)", (product_id, "Rangdhaara Studio"))
+            conn.execute("INSERT INTO courses (product_id, instructor) VALUES (?, ?)", (product_id, "Rangdhara Studio"))
         _audit(conn, request, user, "product.create", "product", product_id, {"title": body.title, "kind": body.kind})
     return _admin_product(conn, product_id)
 
@@ -1174,7 +1174,7 @@ def customers_csv(request: Request, user=Depends(require_admin), conn=Depends(ge
             address.get("state", ""), address.get("pincode", ""))])
     with transaction(conn):
         _audit(conn, request, user, "customer.export", "customer", None, {"rows": len(rows)})
-    filename = f"rangdhaara-customers-{datetime.now(IST):%Y%m%d}.csv"
+    filename = f"rangdhara-customers-{datetime.now(IST):%Y%m%d}.csv"
     return Response(buffer.getvalue(), media_type="text/csv; charset=utf-8",
                     headers={"Content-Disposition": f'attachment; filename="{filename}"'})
 
@@ -1318,7 +1318,7 @@ def revenue_csv(period: Literal["day", "month"] = "day", span: int = 30, user=De
             paid, o["id"], o["status"], o["customer_name"], o["email"], f"{row['products'] / 100:.2f}", f"{row['academy'] / 100:.2f}",
             f"{o['shipping_paise'] / 100:.2f}", f"{o['discount_paise'] / 100:.2f}", f"{o['total_paise'] / 100:.2f}", refunded,
             o["payment_provider"], o["gateway_payment_id"] or o["payment_reference"] or "")])
-    filename = f"rangdhaara-revenue-{datetime.now(IST):%Y%m%d}.csv"
+    filename = f"rangdhara-revenue-{datetime.now(IST):%Y%m%d}.csv"
     return Response(buffer.getvalue(), media_type="text/csv; charset=utf-8",
                     headers={"Content-Disposition": f'attachment; filename="{filename}"'})
 
@@ -1355,7 +1355,7 @@ def system(user=Depends(require_admin), conn=Depends(get_db)):
 
 @router.post("/system/test-email")
 def test_email(request: Request, user=Depends(require_admin), conn=Depends(get_db)):
-    emails.enqueue(conn, "test", user["email"], "Rangdhaara test email",
+    emails.enqueue(conn, "test", user["email"], "Rangdhara test email",
                    "<p>If you can read this, email delivery from your store is working.</p>")
     delivered = emails.deliver_pending(conn)
     _audit(conn, request, user, "system.test_email", "system", None, {"to": user["email"]})

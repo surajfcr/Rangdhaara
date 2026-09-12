@@ -26,12 +26,16 @@ services:
         generateValue: true
       - key: DATA_DIR
         value: /var/data/data
+      # Without this, the database would sit outside /var/data and be wiped on every future
+      # deploy (only the disk survives a redeploy; everything else is rebuilt from git).
+      - key: DATABASE_PATH
+        value: /var/data/data/rangdhara.db
       - key: STORAGE_DIR
         value: /var/data/storage
       - key: UPLOADS_DIR
         value: /var/data/uploads
       - key: STORE_NAME
-        value: Rangdhaara Art Studio
+        value: Rangdhara Art Studio
       - key: WHATSAPP_NUMBER
         value: "918080007684"
       - key: INSTAGRAM_HANDLE
@@ -45,7 +49,7 @@ services:
       - key: UPI_VPA
         sync: false
       - key: UPI_PAYEE_NAME
-        value: Rangdhaara Art Studio
+        value: Rangdhara Art Studio
       # Email: an address at your own domain (Google Workspace), used to send OTPs, receipts,
       # shipping updates, etc. An "app password" (not the mailbox's normal login password) — see README.
       - key: SMTP_HOST

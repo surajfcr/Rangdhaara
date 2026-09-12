@@ -27,7 +27,7 @@ def get_or_issue(conn, enrollment: dict, student_name: str, course_title: str) -
     cert_id = existing["id"] if existing else "RGC-" + "".join(secrets.choice(_ALPHABET) for _ in range(8))
     key = f"certificates/{cert_id}.pdf"
     issued = existing["issued_at"] if existing else iso()
-    _render(resolve_key(key), cert_id, student_name.strip() or "Rangdhaara Student", course_title, issued)
+    _render(resolve_key(key), cert_id, student_name.strip() or "Rangdhara Student", course_title, issued)
     if not existing:
         conn.execute(
             "INSERT INTO certificates (id, enrollment_id, student_name, course_title, storage_key, issued_at) VALUES (?, ?, ?, ?, ?, ?)",
@@ -120,5 +120,5 @@ def _render(path: Path, cert_id: str, student: str, course: str, issued_iso: str
     pdf.set_font("Times", "I", 12)
     pdf.set_text_color(35, 32, 29)
     pdf.set_xy(0, 172)
-    pdf.cell(width, 6, text="Rangdhaara Art Studio", align="C")
+    pdf.cell(width, 6, text="Rangdhara Art Studio", align="C")
     pdf.output(str(path))

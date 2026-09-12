@@ -68,7 +68,7 @@ def lookup_pincode(conn, pincode: str) -> dict:
     city, state, areas, source = None, None, [], "prefix"
     try:
         req = urllib.request.Request(
-            f"https://api.postalpincode.in/pincode/{pincode}", headers={"User-Agent": "Rangdhaara/1.0"}
+            f"https://api.postalpincode.in/pincode/{pincode}", headers={"User-Agent": "Rangdhara/1.0"}
         )
         with urllib.request.urlopen(req, timeout=4) as resp:
             payload = json.loads(resp.read().decode("utf-8"))

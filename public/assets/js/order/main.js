@@ -206,12 +206,12 @@ const helpCard = (o) => html`
   <section class="rounded-3xl border border-sand bg-cream p-6 text-sm space-y-3">
     <h2 class="subhead">Need help?</h2>
     <p class="text-charcoal-light">Message the studio with your order number and we'll get back to you.</p>
-    <a class="btn btn-outline w-full" target="_blank" rel="noopener" href="${whatsappLink(`Hi Rangdhaara, I have a question about order #${o.id}.`)}"><i data-lucide="message-circle" class="w-4 h-4"></i>WhatsApp the studio</a>
+    <a class="btn btn-outline w-full" target="_blank" rel="noopener" href="${whatsappLink(`Hi Rangdhara, I have a question about order #${o.id}.`)}"><i data-lucide="message-circle" class="w-4 h-4"></i>WhatsApp the studio</a>
   </section>`;
 
 function paint() {
   const o = order;
-  document.title = `Order #${o.id} · Rangdhaara`;
+  document.title = `Order #${o.id} · Rangdhara`;
   render(root, html`
     <div class="grid lg:grid-cols-[minmax(0,1fr)_22rem] gap-8 items-start">
       <div class="space-y-6">

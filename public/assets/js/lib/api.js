@@ -1,4 +1,4 @@
-// Thin wrapper around fetch for the Rangdhaara JSON API.
+// Thin wrapper around fetch for the Rangdhara JSON API.
 // Every write carries the X-Requested-With header the server requires (CSRF guard).
 
 export class ApiError extends Error {

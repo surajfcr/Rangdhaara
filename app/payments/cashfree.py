@@ -51,7 +51,7 @@ class CashfreeProvider(Provider):
                 "customer_name": customer["name"],
             },
             "order_meta": meta,
-            "order_note": f"Rangdhaara order {order['id']}",
+            "order_note": f"Rangdhara order {order['id']}",
         })
         session_id = created.get("payment_session_id")
         if not session_id:

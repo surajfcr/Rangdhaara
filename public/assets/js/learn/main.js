@@ -39,7 +39,7 @@ function signedOut() {
 // ------------------------------------------------------------------ course list
 
 async function showList() {
-  document.title = "My courses · Rangdhaara Art Academy";
+  document.title = "My courses · Rangdhara Art Academy";
   let data;
   try {
     data = await api("/me/courses");
@@ -103,7 +103,7 @@ async function showCourse(id) {
       </div>`);
     return;
   }
-  document.title = `${course.course.title} · Rangdhaara Art Academy`;
+  document.title = `${course.course.title} · Rangdhara Art Academy`;
   const lessons = allLessons();
   if (!lessons.length) {
     render(root, html`<h1 class="font-serif text-3xl font-bold">${course.course.title}</h1><p class="text-charcoal-light mt-3">Lessons for this course haven't been published yet.</p>`);

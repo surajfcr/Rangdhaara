@@ -33,7 +33,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(
-    title="Rangdhaara",
+    title="Rangdhara",
     lifespan=lifespan,
     docs_url=None if settings.is_production else "/api/docs",
     redoc_url=None,

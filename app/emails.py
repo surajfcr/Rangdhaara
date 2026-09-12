@@ -57,7 +57,7 @@ def _layout(heading: str, body: str, preheader: str = "") -> str:
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid {RULE};border-radius:14px;">
 <tr><td style="padding:22px 28px;border-bottom:1px solid {RULE};">
-<div style="font-family:Georgia,serif;font-size:22px;font-weight:bold;color:{INK};">Rangdhaara</div>
+<div style="font-family:Georgia,serif;font-size:22px;font-weight:bold;color:{INK};">Rangdhara</div>
 <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:{BRAND};margin-top:2px;">Texture &amp; Clay Art Studio</div>
 </td></tr>
 <tr><td style="padding:26px 28px 8px;">
@@ -137,17 +137,17 @@ def _html_to_text(markup: str) -> str:
 # ---------------------------------------------------------------- account emails
 
 OTP_SUBJECTS = {
-    "login": "{code} is your Rangdhaara sign-in code",
-    "signup": "{code} is your Rangdhaara verification code",
-    "reset": "{code} is your Rangdhaara password reset code",
+    "login": "{code} is your Rangdhara sign-in code",
+    "signup": "{code} is your Rangdhara verification code",
+    "reset": "{code} is your Rangdhara password reset code",
 }
 
 
 def send_otp(conn, email: str, name: str, code: str, purpose: str) -> None:
     intro = {
-        "login": "Use this code to sign in to your Rangdhaara account.",
+        "login": "Use this code to sign in to your Rangdhara account.",
         "signup": "Use this code to confirm your email and finish creating your account.",
-        "reset": "Use this code to set a new password for your Rangdhaara account.",
+        "reset": "Use this code to set a new password for your Rangdhara account.",
     }[purpose]
     body = (
         _p(f"Hi {e(name) or 'there'},")
@@ -165,12 +165,12 @@ def send_otp(conn, email: str, name: str, code: str, purpose: str) -> None:
 def send_signup_existing(conn, email: str, name: str) -> None:
     body = (
         _p(f"Hi {e(name) or 'there'},")
-        + _p("Someone — hopefully you — just tried to create a new Rangdhaara account with this email address. "
+        + _p("Someone — hopefully you — just tried to create a new Rangdhara account with this email address. "
              "You already have one, so no new account was created.")
         + _button("Sign in instead", link("/?signin=1"))
         + _p("Forgotten your password? Choose <em>Email me a code</em> on the sign-in screen.")
     )
-    enqueue(conn, "signup_existing", email, "You already have a Rangdhaara account", _layout("You already have an account", body))
+    enqueue(conn, "signup_existing", email, "You already have a Rangdhara account", _layout("You already have an account", body))
 
 
 def send_welcome(conn, user: dict) -> None:
@@ -181,10 +181,10 @@ def send_welcome(conn, user: dict) -> None:
         + '<ul style="font-size:15px;line-height:1.7;padding-left:20px;margin:0 0 14px;">'
         "<li><strong>Ready-to-buy art</strong> — textured canvases and handcrafted clay decor, packed by hand.</li>"
         "<li><strong>DIY kits</strong> — everything you need to paint your own piece at home.</li>"
-        "<li><strong>Rangdhaara Art Academy</strong> — video masterclasses and live weekend workshops.</li></ul>"
+        "<li><strong>Rangdhara Art Academy</strong> — video masterclasses and live weekend workshops.</li></ul>"
         + _button("Visit the studio", link("/"))
     )
-    enqueue(conn, "welcome", user["email"], "Welcome to Rangdhaara", _layout("Welcome to Rangdhaara", body))
+    enqueue(conn, "welcome", user["email"], "Welcome to Rangdhara", _layout("Welcome to Rangdhara", body))
 
 
 # ---------------------------------------------------------------- order emails
@@ -270,7 +270,7 @@ def send_abandoned_cart(conn, order: dict, items: list[dict], restore_url: str) 
         + _items_table(items, order)
         + _button("Return to your cart", restore_url)
     )
-    enqueue(conn, "abandoned_cart", order["email"], "Your Rangdhaara cart is waiting", _layout("Still thinking it over?", body))
+    enqueue(conn, "abandoned_cart", order["email"], "Your Rangdhara cart is waiting", _layout("Still thinking it over?", body))
 
 
 def send_enrollment(conn, user: dict, course_title: str, course_id: int, reason: str = "purchase") -> None:
