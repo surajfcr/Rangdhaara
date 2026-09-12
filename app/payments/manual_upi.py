@@ -27,7 +27,9 @@ class ManualUpiProvider(Provider):
             "cu": "INR",
             "tn": f"Rangdhara {order['id']}",
         })
-        qr = segno.make(uri, error="m").svg_inline(scale=5, dark="#1C1917", light="#FFFFFF", border=2)
+        # border=4 is the minimum quiet zone a scanner can rely on (the ISO spec's own recommendation) —
+        # a tighter margin reads fine on some phones and fails silently on others.
+        qr = segno.make(uri, error="m").svg_inline(scale=5, dark="#1C1917", light="#FFFFFF", border=4)
         return order["id"], {
             "vpa": settings.upi_vpa,
             "payee": settings.upi_payee_name,

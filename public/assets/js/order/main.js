@@ -80,7 +80,7 @@ function upiPanel(o) {
   if (!c || !c.vpa) return "";
   return html`
     <section class="rounded-3xl border border-sand bg-white p-6 grid sm:grid-cols-[auto_1fr] gap-6 items-center">
-      <div class="w-44 h-44 mx-auto rounded-2xl border border-sand overflow-hidden grid place-items-center bg-white" aria-label="UPI QR code">${raw(c.qr_svg)}</div>
+      <div class="qr-frame w-44 h-44 mx-auto rounded-2xl border border-sand grid place-items-center bg-white p-2" aria-label="UPI QR code">${raw(c.qr_svg)}</div>
       <div class="space-y-3">
         <div><p class="field-label">Amount</p><p class="text-3xl font-bold">${rupees(c.amount_paise)}</p></div>
         <div>

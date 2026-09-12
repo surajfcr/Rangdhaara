@@ -288,6 +288,11 @@ select.input {
 
 .req { margin-left: .15rem; color: var(--color-danger); font-weight: 700; }
 
+/* segno's inline SVG carries fixed pixel width/height, sized off the QR's own module count —
+   almost never a match for the box it's dropped into. Force it to fill that box instead;
+   the QR is always square, so width and height scale together with nothing distorted. */
+.qr-frame svg { width: 100%; height: 100%; display: block; }
+
 .captcha { display: flex; align-items: center; gap: .5rem; }
 .captcha-image {
   display: flex; align-items: center; justify-content: center;
