@@ -11,7 +11,7 @@ import threading
 import traceback
 from datetime import datetime
 
-from . import emails, orders
+from . import captcha, emails, orders
 from .config import settings
 from .db import connect, iso, iso_in, kv_get, kv_set, one, transaction
 from .payments.service import reconcile
@@ -23,6 +23,7 @@ TICK_SECONDS = 10
 
 def cleanup(conn) -> str:
     purge_rate_events(conn)
+    captcha.purge(conn)
     conn.execute("DELETE FROM otp_requests WHERE expires_at < ?", (iso_in(days=-1),))
     conn.execute("DELETE FROM auth_tokens WHERE expires_at < ?", (iso_in(days=-1),))
     conn.execute("DELETE FROM sessions WHERE expires_at < ? OR (revoked_at IS NOT NULL AND revoked_at < ?)",

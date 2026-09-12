@@ -525,10 +525,25 @@ SCHEMA_V2 = """
 ALTER TABLE products ADD COLUMN archived_at TEXT;
 """
 
+SCHEMA_V3 = """
+CREATE TABLE captcha_challenges (
+    id TEXT PRIMARY KEY,
+    answer_hash TEXT NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    expires_at TEXT NOT NULL,
+    consumed_at TEXT,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX idx_captcha_created ON captcha_challenges(created_at);
+"""
+
 MIGRATIONS: list[tuple[int, str]] = [
     (1, SCHEMA_V1),
     # Products that have been sold can't be deleted without breaking order history, so they're archived instead.
     (2, SCHEMA_V2),
+    # The answer is kept server-side so a bot can't read it out of the page, and each row is
+    # single-use so a solved challenge can't be replayed to spam the signup mailer.
+    (3, SCHEMA_V3),
 ]
 
 

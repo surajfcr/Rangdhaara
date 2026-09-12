@@ -46,6 +46,7 @@ _legacy.mkdir(parents=True)
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from app import captcha  # noqa: E402
 from app import jobs  # noqa: E402
 from app import orders as order_logic  # noqa: E402
 from app.config import settings  # noqa: E402
@@ -116,6 +117,32 @@ def variant_of(product_id):
 def last_code(email):
     subject = value("SELECT subject FROM email_outbox WHERE to_email = ? AND kind LIKE 'otp_%' ORDER BY id DESC LIMIT 1", (email,))
     return re.match(r"^(\d{6})", subject).group(1)
+
+
+def solved_captcha() -> dict:
+    """A challenge with a known answer, standing in for a person reading the picture.
+
+    The answer is only ever stored as a keyed hash, so the test plants the hash it
+    wants rather than trying to read one back.
+    """
+    challenge_id, answer = f"test-{os.urandom(8).hex()}", "ABCDE"
+    conn = connect()
+    try:
+        with transaction(conn):
+            conn.execute(
+                "INSERT INTO captcha_challenges (id, answer_hash, expires_at, created_at) VALUES (?, ?, ?, ?)",
+                (challenge_id, captcha._answer_hash(challenge_id, answer), iso_in(minutes=10), iso_in(minutes=0)),
+            )
+    finally:
+        conn.close()
+    return {"captcha_id": challenge_id, "captcha_answer": answer}
+
+
+def signup_body(**overrides) -> dict:
+    body = {"full_name": "Meera Joshi", "email": "meera@example.com", "phone": "9811111111",
+            "password": "Tulips-in-bloom-7", "confirm_password": "Tulips-in-bloom-7", **solved_captcha()}
+    body.update(overrides)
+    return body
 
 
 def make_user(email, role="customer", password=PASSWORD):
@@ -206,8 +233,7 @@ class SurfaceTests(Case):
 class AuthTests(Case):
     def test_signup_needs_the_emailed_code(self):
         c = client()
-        r = post(c, "/api/v1/auth/signup", {"full_name": "Meera Joshi", "email": "meera@example.com", "phone": "9811111111",
-                                            "password": "Tulips-in-bloom-7", "confirm_password": "Tulips-in-bloom-7"})
+        r = post(c, "/api/v1/auth/signup", signup_body())
         self.assertEqual(r.status_code, 200, r.text)
         self.assertIsNone(c.get("/api/v1/auth/session").json()["user"])
         code = last_code("meera@example.com")
@@ -218,15 +244,51 @@ class AuthTests(Case):
         user = c.get("/api/v1/auth/session").json()["user"]
         self.assertEqual(user["email"], "meera@example.com")
         self.assertTrue(user["email_verified"])
+        # The welcome note goes out only once the address is proven, never on the unverified attempt.
+        self.assertEqual(value("SELECT COUNT(*) FROM email_outbox WHERE to_email = ? AND kind = 'welcome'",
+                               ("meera@example.com",)), 1)
 
     def test_signup_rejects_weak_or_mismatched_passwords(self):
         c = client()
-        weak = post(c, "/api/v1/auth/signup", {"full_name": "A", "email": "weak@example.com", "phone": "9822222222",
-                                               "password": "password123", "confirm_password": "password123"})
+        weak = post(c, "/api/v1/auth/signup", signup_body(email="weak@example.com", phone="9822222222",
+                                                          password="password123", confirm_password="password123"))
         self.assertIn("password", weak.json()["error"]["fields"])
-        mismatch = post(c, "/api/v1/auth/signup", {"full_name": "A", "email": "weak@example.com", "phone": "9822222222",
-                                                   "password": "Strong-pass-42", "confirm_password": "Strong-pass-43"})
+        mismatch = post(c, "/api/v1/auth/signup", signup_body(email="weak@example.com", phone="9822222222",
+                                                              password="Strong-pass-42", confirm_password="Strong-pass-43"))
         self.assertIn("confirm_password", mismatch.json()["error"]["fields"])
+
+    def test_signup_needs_the_picture_puzzle(self):
+        c = client()
+        no_answer = post(c, "/api/v1/auth/signup", signup_body(email="bot1@example.com", captcha_answer="ZZZZZ"))
+        self.assertEqual(no_answer.status_code, 400)
+        self.assertIn("captcha_answer", no_answer.json()["error"]["fields"])
+        self.assertEqual(value("SELECT COUNT(*) FROM email_outbox WHERE to_email = 'bot1@example.com'"), 0)
+
+        # A puzzle answered correctly is spent, so one solve can't buy a second sign-up.
+        solved = solved_captcha()
+        first = post(c, "/api/v1/auth/signup", signup_body(email="once@example.com", **solved))
+        self.assertEqual(first.status_code, 200, first.text)
+        replay = post(c, "/api/v1/auth/signup", signup_body(email="twice@example.com", phone="9790011224", **solved))
+        self.assertEqual(replay.status_code, 400)
+        self.assertEqual(value("SELECT COUNT(*) FROM email_outbox WHERE to_email = 'twice@example.com'"), 0)
+
+    def test_captcha_endpoint_keeps_the_answer_to_itself(self):
+        served = client().get("/api/v1/auth/captcha")
+        self.assertEqual(served.status_code, 200)
+        body = served.json()
+        self.assertTrue(body["image"].startswith("data:image/png;base64,"))
+        stored = row("SELECT * FROM captcha_challenges WHERE id = ?", (body["captcha_id"],))
+        self.assertNotIn(stored["answer_hash"], json.dumps(body))
+
+    def test_resending_a_code_needs_no_second_puzzle(self):
+        c = client()
+        started = post(c, "/api/v1/auth/signup", signup_body(email="resend@example.com", phone="9790011223"))
+        again = post(c, "/api/v1/auth/code/resend", {"request_id": started.json()["request_id"]})
+        self.assertEqual(again.status_code, 200, again.text)
+        verified = post(c, "/api/v1/auth/code/verify",
+                        {"request_id": again.json()["request_id"], "code": last_code("resend@example.com")})
+        self.assertEqual(verified.status_code, 200, verified.text)
+        self.assertEqual(c.get("/api/v1/auth/session").json()["user"]["email"], "resend@example.com")
 
     def test_code_requests_dont_reveal_which_accounts_exist(self):
         make_user("known@example.com")

@@ -10,7 +10,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, Field
 
-from .. import emails
+from .. import captcha, emails
 from ..auth import SESSION_COOKIE, clear_session_cookie, client_ip, create_session, current_user, public_user, revoke_all_sessions
 from ..config import settings
 from ..db import get_db, iso, iso_in, one, transaction
@@ -39,6 +39,10 @@ class CodeVerifyIn(BaseModel):
     code: str = Field(min_length=6, max_length=12)
 
 
+class ResendIn(BaseModel):
+    request_id: str = Field(min_length=10, max_length=64)
+
+
 class SignupIn(BaseModel):
     full_name: str = Field(max_length=80)
     email: str = Field(max_length=120)
@@ -46,6 +50,8 @@ class SignupIn(BaseModel):
     password: str = Field(max_length=200)
     confirm_password: str = Field(max_length=200)
     marketing_opt_in: bool = False
+    captcha_id: str = Field(default="", max_length=64)
+    captcha_answer: str = Field(default="", max_length=20)
 
 
 class ResetIn(BaseModel):
@@ -57,6 +63,13 @@ class ResetIn(BaseModel):
 @router.get("/session")
 def session(user=Depends(current_user)):
     return {"user": public_user(user) if user else None}
+
+
+@router.get("/captcha")
+def new_captcha(request: Request, conn=Depends(get_db)):
+    if rate_limited(conn, f"captcha:ip:{client_ip(request)}", 60, 3600):
+        raise too_many("Too many attempts. Please wait a while and try again.")
+    return captcha.issue(conn)
 
 
 def _issue_code(conn, *, purpose: str, email: str, name: str = "", user_id: str | None = None,
@@ -115,6 +128,30 @@ def request_code(body: CodeRequestIn, request: Request, conn=Depends(get_db)):
                                      user_id=user["id"], ip=ip)
         else:
             request_id = _issue_code(conn, purpose=body.purpose, email=key[:120], ip=ip, deliver=False)
+    return {"request_id": request_id, "message": CODE_SENT}
+
+
+@router.post("/code/resend")
+def resend_code(body: ResendIn, request: Request, conn=Depends(get_db)):
+    """Re-send the code for a request already in flight.
+
+    Sign-up re-posted the whole form to do this, which after the picture puzzle
+    would mean solving a new one to receive a second code.
+    """
+    ip = client_ip(request)
+    req = one(conn, "SELECT * FROM otp_requests WHERE id = ?", (body.request_id,))
+    if not req or req["consumed_at"] or req["expires_at"] <= iso():
+        raise bad_request("That code has expired. Please start again.", code="reset_expired")
+    if rate_limited(conn, f"otp:ip:{ip}", 10, 3600) or rate_limited(conn, f"otp:id:{req['email']}", 3, 3600):
+        raise too_many("You've asked for several codes already. Check your inbox and spam folder, or wait before asking again.")
+    payload = json.loads(req["payload"]) if req["payload"] else None
+    name = (payload or {}).get("full_name", "")
+    if not name and req["user_id"]:
+        name = (one(conn, "SELECT full_name FROM users WHERE id = ?", (req["user_id"],)) or {}).get("full_name", "")
+    with transaction(conn):
+        # A decoy request stays a decoy, so resending can't reveal whether the account exists.
+        request_id = _issue_code(conn, purpose=req["purpose"], email=req["email"], name=name, user_id=req["user_id"],
+                                 payload=payload, ip=ip, deliver=req["code_hash"] is not None)
     return {"request_id": request_id, "message": CODE_SENT}
 
 
@@ -198,10 +235,14 @@ def signup(body: SignupIn, request: Request, conn=Depends(get_db)):
         fields["password"] = problem
     elif body.password != body.confirm_password:
         fields["confirm_password"] = "The two passwords don't match."
+    # Checked before the puzzle, so a typo in the phone number doesn't cost the customer a fresh image.
     if fields:
         raise bad_request("Some details need fixing.", fields=fields)
     if rate_limited(conn, f"signup:ip:{ip}", 10, 3600) or rate_limited(conn, f"otp:id:{email}", 3, 3600):
         raise too_many("Too many sign-up attempts. Please wait a while and try again.")
+    if not captcha.verify(conn, body.captcha_id, body.captcha_answer):
+        raise bad_request("Some details need fixing.",
+                          fields={"captcha_answer": "That doesn't match the picture. Here's a new one."})
 
     existing = one(conn, "SELECT * FROM users WHERE email = ?", (email,))
     password_hash = None if existing else hash_password(body.password)

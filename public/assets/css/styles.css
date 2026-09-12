@@ -286,6 +286,19 @@ select.input {
 .code-input { text-align: center; letter-spacing: .5em; font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: 1.6rem; font-weight: 700; }
 .pw-toggle { position: absolute; top: 50%; right: .25rem; transform: translateY(-50%); width: 2rem; height: 2rem; }
 
+.req { margin-left: .15rem; color: var(--color-danger); font-weight: 700; }
+
+.captcha { display: flex; align-items: center; gap: .5rem; }
+.captcha-image {
+  display: flex; align-items: center; justify-content: center;
+  min-width: 220px; height: 70px;
+  border: 1px solid #DED3C6; border-radius: .75rem; background: var(--color-cream-card); overflow: hidden;
+}
+.captcha-image img { display: block; max-width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+/* The puzzle is five characters: wide letter spacing keeps a typo visible at a glance. */
+.captcha-input { text-transform: uppercase; letter-spacing: .25em; font-weight: 600; }
+.captcha-input::placeholder { letter-spacing: normal; text-transform: none; }
+
 .field-error { margin-top: .3rem; font-size: .78rem; color: var(--color-danger); }
 .form-error { padding: .65rem .85rem; border: 1px solid #F7C9C4; border-radius: .75rem; background: #FEF3F2; color: var(--color-danger); font-size: .85rem; }
 .dev-note { display: flex; gap: .5rem; align-items: flex-start; padding: .6rem .8rem; border: 1px solid #F1D98C; border-radius: .75rem; background: #FEF8E4; color: #634800; font-size: .8rem; }

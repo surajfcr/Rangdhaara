@@ -37,6 +37,7 @@ function ensureRoot() {
     refreshIcons();
   });
   on(root, "click", "[data-resend]", resend);
+  on(root, "click", "[data-captcha-refresh]", () => loadCaptcha({ focus: true }));
   on(root, "input", 'input[name="code"]', (e, el) => { el.value = el.value.replace(/\D/g, "").slice(0, 6); });
   root.addEventListener("submit", submit);
 }
@@ -72,9 +73,15 @@ const tabs = (active) => html`
     <button type="button" role="tab" class="seg-btn" aria-selected="${active === "signup"}" data-go="signup">Create account</button>
   </div>`;
 
-const passwordField = (name, label, autocomplete) => html`
+// Every field on these forms has to be filled in, so the star is a promise the form keeps:
+// where it appears, the field is needed. Screen readers get the word, not the symbol.
+const req = html`<span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span>`;
+
+const label = (text) => html`<span class="field-label">${text}${req}</span>`;
+
+const passwordField = (name, text, autocomplete) => html`
   <label class="field">
-    <span class="field-label">${label}</span>
+    ${label(text)}
     <span class="relative block">
       <input class="input pr-11" type="password" name="${name}" autocomplete="${autocomplete}" required>
       <button type="button" class="pw-toggle icon-btn" data-toggle-password aria-label="Show password"><i data-lucide="eye" class="w-4 h-4"></i></button>
@@ -83,9 +90,25 @@ const passwordField = (name, label, autocomplete) => html`
 
 const identifierField = (value) => html`
   <label class="field">
-    <span class="field-label">Email or mobile number</span>
+    ${label("Email or mobile number")}
     <input class="input" name="identifier" autocomplete="username" required value="${value || ""}" autofocus>
   </label>`;
+
+const captchaField = () => html`
+  <div class="field">
+    ${label("Type the letters you see")}
+    <div class="captcha">
+      <div class="captcha-image" data-captcha-image>
+        <span class="skeleton block w-full h-full"></span>
+      </div>
+      <button type="button" class="icon-btn shrink-0" data-captcha-refresh aria-label="Show a different picture" title="Show a different picture">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+      </button>
+    </div>
+    <input class="input captcha-input mt-2" name="captcha_answer" autocomplete="off" autocapitalize="characters"
+           spellcheck="false" maxlength="10" required aria-describedby="captcha-hint">
+    <span id="captcha-hint" class="hint">Not case-sensitive. Can't read it? Use the refresh button for a new picture.</span>
+  </div>`;
 
 const errorBox = html`<div class="form-error" role="alert" hidden></div>`;
 
@@ -117,7 +140,7 @@ function paint() {
       ${head("Check your email", flow.message || "Enter the 6-digit code we sent you.")}
       <form data-form="verify" class="space-y-4" novalidate>
         <label class="field">
-          <span class="field-label">6-digit code</span>
+          ${label("6-digit code")}
           <input class="input code-input" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required autofocus>
         </label>
         ${getStore() && getStore().email_dev_mode ? html`<p class="dev-note"><i data-lucide="terminal" class="w-4 h-4 shrink-0"></i><span>Development mode: no email is sent. The code is printed in the server window.</span></p>` : ""}
@@ -133,14 +156,16 @@ function paint() {
       ${head("Create your account", "Save your address, follow every order and keep your courses in one place.")}
       ${tabs("signup")}
       <form data-form="signup" class="space-y-4" novalidate>
-        <label class="field"><span class="field-label">Full name</span><input class="input" name="full_name" autocomplete="name" required autofocus value="${(flow.draft && flow.draft.full_name) || ""}"></label>
+        <p class="hint"><span class="req" aria-hidden="true">*</span> All fields are required.</p>
+        <label class="field">${label("Full name")}<input class="input" name="full_name" autocomplete="name" required autofocus value="${(flow.draft && flow.draft.full_name) || ""}"></label>
         <div class="grid sm:grid-cols-2 gap-4">
-          <label class="field"><span class="field-label">Email</span><input class="input" type="email" name="email" autocomplete="email" required value="${(flow.draft && flow.draft.email) || ""}"></label>
-          <label class="field"><span class="field-label">Mobile number</span><input class="input" type="tel" name="phone" inputmode="numeric" autocomplete="tel-national" placeholder="10 digits" required value="${(flow.draft && flow.draft.phone) || ""}"></label>
+          <label class="field">${label("Email")}<input class="input" type="email" name="email" autocomplete="email" required value="${(flow.draft && flow.draft.email) || ""}"></label>
+          <label class="field">${label("Mobile number")}<input class="input" type="tel" name="phone" inputmode="numeric" autocomplete="tel-national" placeholder="10 digits" required value="${(flow.draft && flow.draft.phone) || ""}"></label>
         </div>
         ${passwordField("password", "Password", "new-password")}
         ${passwordField("confirm_password", "Confirm password", "new-password")}
         <p class="hint -mt-2">At least 8 characters. Avoid common passwords.</p>
+        ${captchaField()}
         <label class="flex items-start gap-2.5 text-sm text-charcoal-light">
           <input type="checkbox" name="marketing_opt_in" class="checkbox mt-0.5">
           <span>Email me when new pieces and masterclasses launch</span>
@@ -160,6 +185,30 @@ function paint() {
       </form>`,
   };
   render(panel, (views[flow.mode] || views.signin)());
+  if (panel.querySelector("[data-captcha-image]")) loadCaptcha();
+}
+
+// ------------------------------------------------------------------ picture puzzle
+
+// The image is built by the server, which keeps the answer; the page only ever holds the id.
+async function loadCaptcha({ focus = false } = {}) {
+  const holder = panel.querySelector("[data-captcha-image]");
+  if (!holder) return;
+  flow.captchaId = null;
+  try {
+    const res = await api("/auth/captcha");
+    if (!holder.isConnected) return;
+    flow.captchaId = res.captcha_id;
+    render(holder, html`<img src="${res.image}" alt="" width="220" height="70">`);
+  } catch {
+    if (!holder.isConnected) return;
+    render(holder, html`<span class="text-sm text-charcoal-light">Couldn't load the picture. Use the refresh button.</span>`);
+  }
+  const input = panel.querySelector('input[name="captcha_answer"]');
+  if (input) {
+    input.value = "";
+    if (focus) input.focus();
+  }
 }
 
 // ------------------------------------------------------------------ actions
@@ -195,10 +244,12 @@ async function submit(e) {
         showFieldErrors(form, { confirm_password: "The two passwords don't match." });
         return;
       }
+      if (!data.captcha_answer) { showFieldErrors(form, { captcha_answer: "Type the letters from the picture." }); return; }
       const body = { full_name: data.full_name, email: data.email, phone: data.phone, password: data.password,
-        confirm_password: data.confirm_password, marketing_opt_in: data.marketing_opt_in };
+        confirm_password: data.confirm_password, marketing_opt_in: data.marketing_opt_in,
+        captcha_id: flow.captchaId || "", captcha_answer: data.captcha_answer };
       const res = await api("/auth/signup", { method: "POST", body });
-      go("verify", { purpose: "signup", requestId: res.request_id, identifier: data.email, signup: body,
+      go("verify", { purpose: "signup", requestId: res.request_id, identifier: data.email,
         draft: { full_name: data.full_name, email: data.email, phone: data.phone }, message: `Enter the 6-digit code we emailed to ${data.email}.` });
     } else if (form.dataset.form === "verify") {
       if (!/^\d{6}$/.test(data.code || "")) { showFieldErrors(form, { code: "Enter all 6 digits." }); return; }
@@ -224,6 +275,8 @@ async function submit(e) {
     }
     if (!showFieldErrors(form, err.fields)) formError(form, err.message);
     else formError(form, err.message);
+    // A puzzle is spent once it has been answered, right or wrong, so a retry always gets a new one.
+    if (form.dataset.form === "signup" && panel.querySelector("[data-captcha-image]")) loadCaptcha();
   } finally {
     if (button.isConnected) busy(button, false);
   }
@@ -232,9 +285,7 @@ async function submit(e) {
 async function resend(e, el) {
   el.disabled = true;
   try {
-    const res = flow.purpose === "signup" && flow.signup
-      ? await api("/auth/signup", { method: "POST", body: flow.signup })
-      : await api("/auth/code", { method: "POST", body: { identifier: flow.identifier, purpose: flow.purpose || "login" } });
+    const res = await api("/auth/code/resend", { method: "POST", body: { request_id: flow.requestId } });
     flow.requestId = res.request_id;
     toast("A new code is on its way.", "success");
   } catch (err) {
