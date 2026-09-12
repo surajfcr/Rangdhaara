@@ -97,7 +97,7 @@ async function list(el, ctx) {
           <td class="num">${v.price_paise ? rupees(v.price_paise) : html`<span class="text-red-700">Not set</span>`}</td>
           <td class="num"><input type="number" min="0" class="inline-input" value="${v.on_hand}" data-stock="${v.id}" aria-label="Pieces in stock for ${p.title} ${v.label}"></td>
           <td class="text-sm whitespace-nowrap ${v.available === 0 ? "text-red-700 font-semibold" : "text-charcoal-light"}">${v.available === 0 ? "Sold out" : `${v.available} available`}${v.on_hand > v.available ? html`<span class="block text-xs">${v.on_hand - v.available} held at checkout</span>` : ""}</td>`
-          : html`<td colspan="4" class="text-charcoal-light">No price options</td>`}
+          : html`<td colspan="4" class="text-charcoal-light">No size or price set yet</td>`}
         ${i === 0 && owner ? html`<td rowspan="${variants.length}" class="text-right whitespace-nowrap">
           <button type="button" class="icon-btn text-red-700" data-remove="${p.id}" aria-label="Remove ${p.title}" title="Remove"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </td>` : ""}
@@ -222,7 +222,8 @@ async function detail(el, ctx, id) {
               <div class="sm:col-span-2">${field("What's in the box", html`<textarea class="input" name="includes" rows="5">${p.includes.join("\n")}</textarea>`, "One item per line.")}</div>
               <div class="sm:col-span-2">${field("Tools note", html`<input class="input" name="tools_info" value="${p.tools_info}">`)}</div>` : ""}
             ${["physical", "kit"].includes(p.kind) ? html`
-              ${field("Was price (₹)", html`<input class="input" name="compare_at" inputmode="decimal" value="${p.compare_at_paise ? p.compare_at_paise / 100 : ""}">`, "Optional. Shown struck through next to the price.")}
+              ${field("Original price, before discount (₹)", html`<input class="input" name="compare_at" inputmode="decimal" value="${p.compare_at_paise ? p.compare_at_paise / 100 : ""}">`,
+                "Optional, and not the selling price — that goes under “Price & pieces in stock”. Shown struck through to make a discount visible.")}
               <label class="flex items-center gap-2.5 text-sm self-center"><input type="checkbox" class="checkbox" name="is_featured" ${p.is_featured ? "checked" : ""}>Feature on the home page</label>` : ""}
           </fieldset>
           ${owner ? html`<div class="px-4 pb-4"><button type="submit" class="btn btn-primary">Save details</button></div>` : ""}

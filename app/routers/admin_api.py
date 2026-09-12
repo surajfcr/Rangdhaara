@@ -310,9 +310,11 @@ def publish_problems(conn, product: dict) -> list[str]:
                             "WHERE v.product_id = ? AND v.is_active = 1 AND w.starts_at > ?", (product["id"], iso())):
             problems.append("Schedule at least one upcoming session.")
     elif not variants:
-        problems.append("Add at least one price option.")
+        # These name the panel and the button, because the price lives away from the Details form
+        # it sits next to, and "add a price option" sent the owner hunting for the wrong field.
+        problems.append("Under “Price & pieces in stock”, add a size, tick Offered, and press Save on that row.")
     if any(v["price_paise"] <= 0 for v in variants):
-        problems.append("Every price option needs a price above ₹0.")
+        problems.append("Under “Price & pieces in stock”, fill in Price (₹) for every size, then press Save on that row.")
     if not scalar(conn, "SELECT 1 FROM product_media WHERE product_id = ? AND kind = 'image'", (product["id"],)):
         problems.append("Add at least one photo.")
     if product["kind"] == "course" and not scalar(
