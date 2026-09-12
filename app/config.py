@@ -79,7 +79,8 @@ class Settings:
         self.smtp_host = _env("SMTP_HOST", "smtp.gmail.com")
         self.smtp_port = _env_int("SMTP_PORT", 587)
         self.smtp_user = _env("SMTP_USER")
-        self.smtp_password = _env("SMTP_PASSWORD")
+        # Google shows app passwords as "abcd efgh ijkl mnop"; the spaces are for reading, not part of the secret.
+        self.smtp_password = _env("SMTP_PASSWORD").replace(" ", "")
         self.mail_from = _env("MAIL_FROM") or (f"{self.store_name} <{self.smtp_user}>" if self.smtp_user else "")
 
         self.payment_provider = _env("PAYMENT_PROVIDER", "mock").lower()
