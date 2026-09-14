@@ -46,7 +46,6 @@ function sorted(list) {
 }
 
 function paintAll() {
-  paintFeatured();
   paintTabs();
   paintShop();
   paintKits();
@@ -152,22 +151,6 @@ function workshopCard(p) {
 }
 
 // ------------------------------------------------------------------ sections
-
-function paintFeatured() {
-  const target = $("#featured-grid");
-  if (!target) return;
-  let featured = state.products.filter((p) => p.is_featured && ["physical", "kit"].includes(p.kind));
-  if (!featured.length) featured = state.products.filter((p) => ["physical", "kit"].includes(p.kind));
-  render(target, featured.slice(0, 4).map((p) => html`
-    <button type="button" class="featured-tile group" data-open-product="${p.slug}">
-      <img src="${p.image}" alt="" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-      <span class="featured-caption">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-sunflower">${p.category_name || p.kind_label}</span>
-        <span class="block font-serif text-base font-bold leading-tight mt-0.5">${p.title}</span>
-        <span class="block text-sm mt-1 tabular-nums">${rupees(p.price_paise)}</span>
-      </span>
-    </button>`));
-}
 
 function paintTabs() {
   const target = $("#category-tabs");

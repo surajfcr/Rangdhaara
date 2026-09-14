@@ -61,23 +61,36 @@ h1, h2, h3, h4 { font-family: var(--font-heading); text-wrap: balance; }
 .art-card .card-img-container img { transition: transform .6s cubic-bezier(.16, 1, .3, 1); }
 .art-card:hover .card-img-container img { transform: scale(1.05); }
 
-.featured-tile {
-  position: relative;
-  display: block;
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-  border-radius: 1.25rem;
-  text-align: left;
-  background: var(--color-sand);
-  box-shadow: 0 14px 30px -16px rgba(31, 36, 33, 0.45);
+/* Hero visual: two hand-picked pieces staged like a little gallery wall, not a shop grid —
+   the actual products live in the sections below, so this side is purely mood. */
+.hero-art { position: relative; width: 100%; aspect-ratio: 4 / 5; max-width: 30rem; margin: 0 auto; }
+.hero-art-blob {
+  position: absolute; border-radius: 50%; filter: blur(2px); z-index: 0;
 }
-.featured-caption {
-  position: absolute;
-  inset: auto 0 0 0;
-  padding: 1rem;
-  color: #fff;
-  background: linear-gradient(to top, rgba(20, 18, 16, 0.88), rgba(20, 18, 16, 0));
+.hero-art-blob-1 { width: 62%; height: 62%; top: -6%; right: -8%; background: var(--color-sunflower-light, #FEF9E7); opacity: .9; }
+.hero-art-blob-2 { width: 46%; height: 46%; bottom: 2%; left: -10%; background: var(--color-terracotta-light, #FDF1EE); opacity: .85; }
+
+.hero-frame {
+  position: absolute; margin: 0; padding: .55rem .55rem .9rem; background: #fff; border-radius: .6rem;
+  box-shadow: 0 22px 40px -20px rgba(31, 36, 33, 0.35), 0 2px 6px rgba(31, 36, 33, 0.06);
+  z-index: 1;
 }
+.hero-frame img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: .15rem; }
+.hero-frame-1 { width: 66%; aspect-ratio: 4 / 5; top: 4%; left: 2%; transform: rotate(-3deg); z-index: 2; }
+.hero-frame-2 { width: 46%; aspect-ratio: 1 / 1; bottom: 6%; right: 0; transform: rotate(4deg); }
+
+.hero-sunflower {
+  position: absolute; top: 6%; right: 8%; font-size: 2.1rem; z-index: 3;
+  filter: drop-shadow(0 6px 10px rgba(31, 36, 33, 0.18));
+  transform: rotate(8deg);
+}
+.hero-tag {
+  position: absolute; left: -.5rem; bottom: 14%; z-index: 3;
+  background: var(--color-charcoal); color: #fff; font-family: var(--font-heading); font-style: italic;
+  font-size: .8rem; padding: .4rem .85rem; border-radius: .35rem 1rem .35rem 1rem;
+  box-shadow: 0 10px 20px -10px rgba(31, 36, 33, 0.5); transform: rotate(-2deg);
+}
+@media (max-width: 1023px) { .hero-art { max-width: 22rem; } }
 
 .offer-card {
   display: flex;

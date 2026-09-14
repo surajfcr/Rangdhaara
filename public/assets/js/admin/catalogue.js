@@ -222,9 +222,8 @@ async function detail(el, ctx, id) {
               <div class="sm:col-span-2">${field("What's in the box", html`<textarea class="input" name="includes" rows="5">${p.includes.join("\n")}</textarea>`, "One item per line.")}</div>
               <div class="sm:col-span-2">${field("Tools note", html`<input class="input" name="tools_info" value="${p.tools_info}">`)}</div>` : ""}
             ${["physical", "kit"].includes(p.kind) ? html`
-              ${field("Original price, before discount (₹)", html`<input class="input" name="compare_at" inputmode="decimal" value="${p.compare_at_paise ? p.compare_at_paise / 100 : ""}">`,
-                "Optional, and not the selling price — that goes under “Price & pieces in stock”. Shown struck through to make a discount visible.")}
-              <label class="flex items-center gap-2.5 text-sm self-center"><input type="checkbox" class="checkbox" name="is_featured" ${p.is_featured ? "checked" : ""}>Feature on the home page</label>` : ""}
+              <div class="sm:col-span-2">${field("Original price, before discount (₹)", html`<input class="input" name="compare_at" inputmode="decimal" value="${p.compare_at_paise ? p.compare_at_paise / 100 : ""}">`,
+                "Optional, and not the selling price — that goes under “Price & pieces in stock”. Shown struck through to make a discount visible.")}</div>` : ""}
           </fieldset>
           ${owner ? html`<div class="px-4 pb-4"><button type="submit" class="btn btn-primary">Save details</button></div>` : ""}
         </form>
@@ -286,7 +285,7 @@ async function detail(el, ctx, id) {
       if (form.matches("[data-details]")) {
         const v = Object.fromEntries(new FormData(form));
         const body = { title: v.title, category: v.category, badge: v.badge, description: v.description };
-        if ("material" in v) Object.assign(body, { material: v.material, details: lines(v.details), is_featured: form.is_featured.checked,
+        if ("material" in v) Object.assign(body, { material: v.material, details: lines(v.details),
           compare_at_paise: v.compare_at ? toPaise(v.compare_at) : null });
         if ("includes" in v) Object.assign(body, { includes: lines(v.includes), tools_info: v.tools_info });
         refresh(await api(`/admin/products/${p.id}`, { method: "PATCH", body }), "Details saved.");
