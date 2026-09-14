@@ -357,11 +357,17 @@ class ProductCreateIn(BaseModel):
     variant_label: str = Field(default="", max_length=80)
 
 
+# Kinds that get their own storefront section, and so are grouped by that section rather than
+# by category. Category is a browsing filter for finished pieces only — see KIND_CATEGORY_IDS
+# in public/assets/js/lib/status.js, which keeps these out of that filter row.
+KIND_CATEGORY = {"course": "masterclasses", "workshop": "workshops"}
+
+
 @router.post("/products")
 def create_product(body: ProductCreateIn, request: Request, user=Depends(require_admin), conn=Depends(get_db)):
     product_id = f"prd-{random_token(6).lower().replace('_', '').replace('-', '')[:8]}"
     now = iso()
-    category = body.category or {"course": "masterclasses", "workshop": "workshops", "kit": "diy-kits"}.get(body.kind, "")
+    category = "" if body.kind == "kit" else (body.category or KIND_CATEGORY.get(body.kind, ""))
     with transaction(conn):
         conn.execute(
             "INSERT INTO products (id, slug, kind, category, title, description, is_active, sort_order, created_at, updated_at) "

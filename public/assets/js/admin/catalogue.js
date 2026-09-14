@@ -27,7 +27,7 @@ async function addProduct(ctx, categories) {
       ${field("Product name", html`<input class="input" name="title" required autofocus placeholder="e.g. Sunflower 3D Relief Canvas">`)}
       <div class="grid sm:grid-cols-2 gap-4">
         ${field("Type", html`<select class="input" name="kind"><option value="physical">Ready-to-buy piece</option><option value="kit">DIY kit</option></select>`)}
-        ${field("Category", html`<select class="input" name="category"><option value="">None</option>${categories.map((c) => html`<option value="${c.id}">${c.name}</option>`)}</select>`)}
+        <div data-physical-only>${field("Category", html`<select class="input" name="category"><option value="">None</option>${categories.map((c) => html`<option value="${c.id}">${c.name}</option>`)}</select>`, "Groups the piece in the shop's filter row.")}</div>
       </div>
       <div class="grid grid-cols-3 gap-4">
         ${field("Price (₹)", html`<input class="input" name="price" inputmode="decimal" required placeholder="1499">`)}
@@ -42,7 +42,7 @@ async function addProduct(ctx, categories) {
       const price = toPaise(v.price);
       if (!price || price <= 0) throw Object.assign(new Error("Enter a price above ₹0."), { fields: { price: "Enter a price" } });
       let product = await api("/admin/products", { method: "POST", body: {
-        kind: v.kind, title: v.title, category: v.category, description: v.description,
+        kind: v.kind, title: v.title, category: v.kind === "physical" ? v.category : "", description: v.description,
         price_paise: price, on_hand: Number(v.on_hand) || 0, variant_label: v.variant_label } });
       const notes = [];
       const photo = form.photo.files[0];
@@ -212,7 +212,7 @@ async function detail(el, ctx, id) {
           <div class="panel-head"><h2 class="font-semibold">Details</h2>${owner ? "" : html`<span class="text-xs text-charcoal-light">Only the owner can edit details</span>`}</div>
           <fieldset class="panel-body grid sm:grid-cols-2 gap-4" ${owner ? "" : "disabled"}>
             <div class="sm:col-span-2">${field("Name", html`<input class="input" name="title" value="${p.title}" required>`)}</div>
-            ${field("Category", html`<select class="input" name="category"><option value="">None</option>${meta.categories.map((c) => html`<option value="${c.id}" ${c.id === p.category ? "selected" : ""}>${c.name}</option>`)}</select>`)}
+            ${p.kind === "physical" ? field("Category", html`<select class="input" name="category"><option value="">None</option>${meta.categories.map((c) => html`<option value="${c.id}" ${c.id === p.category ? "selected" : ""}>${c.name}</option>`)}</select>`, "Groups the piece in the shop's filter row.") : ""}
             ${field("Badge", html`<input class="input" name="badge" value="${p.badge}" placeholder="e.g. Gift set">`, "A short label on the product photo.")}
             <div class="sm:col-span-2">${field("Description", html`<textarea class="input" name="description" rows="4">${p.description}</textarea>`)}</div>
             ${["physical", "kit"].includes(p.kind) ? html`

@@ -117,3 +117,8 @@ a.stat:hover { border-color: var(--color-terracotta); }
 .chart-col:hover .chart-bar, .chart-col:focus .chart-bar { opacity: .82; }
 .chart-col:focus { outline: none; }
 .chart-col:focus-visible .chart-hit { stroke: var(--color-terracotta); stroke-width: 2; }
+
+/* Category groups a piece in the shop's filter row, which only lists finished pieces — so the
+   field disappears the moment the type is set to a kit. On a browser without :has() it simply
+   stays visible; the value is dropped on submit either way. */
+form:has(select[name="kind"] option[value="kit"]:checked) [data-physical-only] { display: none; }

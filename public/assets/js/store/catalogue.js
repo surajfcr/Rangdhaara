@@ -3,6 +3,7 @@ import { api } from "../lib/api.js";
 import { $, closeLayer, html, on, openLayer, render, toast } from "../lib/dom.js";
 import { durationText, rupees, sessionLabel } from "../lib/format.js";
 import { whatsappLink } from "../lib/session.js";
+import { KIND_CATEGORY_IDS } from "../lib/status.js";
 import { addToCart } from "./cart.js";
 
 const PIN_KEY = "rg_pincode";
@@ -156,8 +157,9 @@ function paintTabs() {
   const target = $("#category-tabs");
   if (!target) return;
   const physical = byKind("physical");
-  const tabs = [{ id: "all", name: "All pieces" }, ...state.categories.filter((c) => physical.some((p) => p.category === c.id))];
-  render(target, tabs.map((t) => html`<button type="button" class="tab-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${state.category === t.id ? "active" : ""}" data-category="${t.id}" aria-pressed="${state.category === t.id}">${t.name}</button>`));
+  const tabs = [{ id: "all", name: "All pieces" }, ...state.categories.filter(
+    (c) => !KIND_CATEGORY_IDS.includes(c.id) && physical.some((p) => p.category === c.id))];
+  render(target, tabs.map((t) => html`<button type="button" class="tab-btn px-5 py-2.5 rounded-full text-base font-semibold whitespace-nowrap ${state.category === t.id ? "active" : ""}" data-category="${t.id}" aria-pressed="${state.category === t.id}">${t.name}</button>`));
 }
 
 function paintShop() {
