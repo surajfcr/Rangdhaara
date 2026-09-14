@@ -204,12 +204,16 @@ function addressCard(o) {
     </section>`;
 }
 
-const helpCard = (o) => html`
+const helpCard = (o) => {
+  const chat = whatsappLink(`Hi Rangdhara, I have a question about order #${o.id}.`);
+  return html`
   <section class="rounded-3xl border border-sand bg-cream p-6 text-sm space-y-3">
     <h2 class="subhead">Need help?</h2>
-    <p class="text-charcoal-light">Message the studio with your order number and we'll get back to you.</p>
-    <a class="btn btn-outline w-full" target="_blank" rel="noopener" href="${whatsappLink(`Hi Rangdhara, I have a question about order #${o.id}.`)}"><i data-lucide="message-circle" class="w-4 h-4"></i>WhatsApp the studio</a>
+    <p class="text-charcoal-light">${chat ? "Message the studio with your order number and we'll get back to you."
+      : "Reply to your order email with your order number and we'll get back to you."}</p>
+    ${chat ? html`<a class="btn btn-outline w-full" target="_blank" rel="noopener" href="${chat}"><i data-lucide="message-circle" class="w-4 h-4"></i>WhatsApp the studio</a>` : ""}
   </section>`;
+};
 
 function paint() {
   const o = order;

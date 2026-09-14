@@ -481,6 +481,22 @@ class CheckoutTests(Case):
         self.assertNotIn("<script>", html)
         self.assertIn("&lt;img", html)
 
+    def test_no_whatsapp_number_means_no_whatsapp_anywhere(self):
+        """The studio's number is personal until a customer-facing one exists, so nothing may publish it."""
+        self.assertEqual(settings.whatsapp_number, "", "tests run with no support number configured")
+        c = client()
+        self.assertEqual(c.get("/api/v1/store").json()["whatsapp_number"], "")
+
+        data = checkout(c, [{"variant_id": variant_of("rtb-km-flatlay"), "qty": 1}],
+                        contact={"name": "Quiet Buyer", "email": "quiet@example.com", "phone": "9844422211"}).json()
+        settle(c, data["client"]["redirect_url"])
+        order_id, token = data["order_id"], data["token"]
+        emailed = value("SELECT html FROM email_outbox WHERE to_email = 'quiet@example.com' ORDER BY id DESC LIMIT 1")
+        receipt = c.get(f"/order/{order_id}/receipt?t={token}").text
+        for surface, text in (("email", emailed), ("receipt", receipt)):
+            self.assertNotIn("WhatsApp", text, f"{surface} still offers WhatsApp")
+            self.assertNotIn("wa.me", text, f"{surface} still links to WhatsApp")
+
     def test_unpaid_orders_expire_and_get_one_reminder(self):
         contact = {"name": "Reminder", "email": "reminder@example.com", "phone": "9877777777"}
         data = checkout(client(), [{"variant_id": variant_of("rtb-km-flatlay"), "qty": 1}], contact=contact, marketing=True).json()

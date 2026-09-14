@@ -127,7 +127,7 @@ def receipt(order_id: str, t: str | None = None, conn=Depends(get_db), user=Depe
                 f"{e(order['ship_pincode'])}</div>")
     refunded = f"<p><strong>Refunded on {_date(order['refunded_at'])}.</strong></p>" if order["status"] == "refunded" else ""
     body = f"""
-<div class="row"><div><h1>Payment receipt</h1><div class="muted">{e(settings.store_name)} · WhatsApp +{e(settings.whatsapp_number)}</div></div>
+<div class="row"><div><h1>Payment receipt</h1><div class="muted">{e(settings.store_name)}{f" · WhatsApp +{e(settings.whatsapp_number)}" if settings.whatsapp_number else ""}</div></div>
 <div style="text-align:right"><div class="muted">Order</div><strong>#{e(order_id)}</strong><div class="muted">Paid {_date(order['paid_at'])}</div></div></div>
 {refunded}
 <div class="row"><div><div class="muted">Billed to</div><strong>{e(order['customer_name'])}</strong><br>{e(order['email'])}<br>{e(order['phone'])}</div>{ship}</div>
@@ -155,7 +155,7 @@ def packing_slip(order_id: str, conn=Depends(get_db), user=Depends(current_user)
 {e(order['ship_line1'])}{'<br>' + e(order['ship_line2']) if order['ship_line2'] else ''}<br>{e(order['ship_city'])}, {e(order['ship_state'])}<br>
 <strong>PIN {e(order['ship_pincode'])}</strong><br>Phone {e(order['ship_phone'])}</div></div>
 <table><thead><tr><th></th><th>Item</th><th class="num">Qty</th></tr></thead><tbody>{rows}</tbody></table>
-<p class="muted" style="margin-top:28px">Thank you for supporting handmade art. Questions: WhatsApp +{e(settings.whatsapp_number)}</p>"""
+<p class="muted" style="margin-top:28px">Thank you for supporting handmade art.{f" Questions: WhatsApp +{e(settings.whatsapp_number)}" if settings.whatsapp_number else ""}</p>"""
     return _doc(f"Packing slip #{order_id}", body)
 
 

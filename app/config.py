@@ -73,7 +73,10 @@ class Settings:
 
         self.store_name = _env("STORE_NAME", "Rangdhara Art Studio")
         self.store_admin_email = _env("STORE_ADMIN_EMAIL")
-        self.whatsapp_number = _env("WHATSAPP_NUMBER", "918080007684")
+        # Empty until the studio has a number meant for customers — the WhatsApp links, buttons
+        # and email lines all disappear while it is. Deliberately not WHATSAPP_NUMBER: that one
+        # held a personal number, and reading it again would put it straight back on the site.
+        self.whatsapp_number = _env("SUPPORT_WHATSAPP_NUMBER")
         self.instagram_handle = _env("INSTAGRAM_HANDLE", "rangdhaara_")
 
         self.smtp_host = _env("SMTP_HOST", "smtp.gmail.com")
@@ -90,7 +93,7 @@ class Settings:
         self.cashfree_app_id = _env("CASHFREE_APP_ID")
         self.cashfree_secret_key = _env("CASHFREE_SECRET_KEY")
         self.cashfree_env = _env("CASHFREE_ENV", "sandbox").lower()
-        self.upi_vpa = _env("UPI_VPA", "8080007684@ybl")
+        self.upi_vpa = _env("UPI_VPA")  # set per deployment; never default to anyone's real UPI id
         self.upi_payee_name = _env("UPI_PAYEE_NAME", self.store_name)
 
         self.origin_pincode = _env("ORIGIN_PINCODE", "431001")

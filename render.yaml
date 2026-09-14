@@ -36,8 +36,10 @@ services:
         value: /var/data/uploads
       - key: STORE_NAME
         value: Rangdhara Art Studio
-      - key: WHATSAPP_NUMBER
-        value: "918080007684"
+      # Set this only once there's a number meant for customers — the site publishes it.
+      # Empty means every WhatsApp link, button and email line is left out.
+      - key: SUPPORT_WHATSAPP_NUMBER
+        value: ""
       - key: INSTAGRAM_HANDLE
         value: rangdhaara_
       - key: ORIGIN_PINCODE

@@ -65,7 +65,7 @@ def _layout(heading: str, body: str, preheader: str = "") -> str:
 {body}
 </td></tr>
 <tr><td style="padding:18px 28px 24px;border-top:1px solid {RULE};font-size:12px;color:#7A6F66;line-height:1.6;">
-Questions? WhatsApp us on +{e(settings.whatsapp_number)} or reply to this email.<br>
+{f"Questions? WhatsApp us on +{e(settings.whatsapp_number)} or reply to this email." if settings.whatsapp_number else "Questions? Just reply to this email."}<br>
 Instagram: @{e(settings.instagram_handle)}
 </td></tr>
 </table></td></tr></table></body></html>"""
@@ -247,7 +247,8 @@ def send_order_delivered(conn, order: dict) -> None:
     body = (
         _p(f"Hi {e(order['customer_name']) or 'there'},")
         + _p(f"Order <strong>#{e(order['id'])}</strong> has been delivered. We hope it looks right at home.")
-        + _p(f"If anything isn't right, WhatsApp us on +{e(settings.whatsapp_number)} with your order number and a photo.")
+        + _p(f"If anything isn't right, WhatsApp us on +{e(settings.whatsapp_number)} with your order number and a photo."
+             if settings.whatsapp_number else "If anything isn't right, reply to this email with a photo and we'll sort it out.")
     )
     enqueue(conn, "order_delivered", order["email"], f"Order #{order['id']} delivered", _layout("Delivered", body))
 

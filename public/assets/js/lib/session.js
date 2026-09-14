@@ -38,7 +38,10 @@ export async function signOut() {
   setUser(null);
 }
 
+// Empty while the studio has no number meant for customers. Callers check before offering
+// a WhatsApp button, so nothing links to a half-built address.
 export function whatsappLink(message = "") {
-  const number = (state.store && state.store.whatsapp_number) || "918080007684";
+  const number = state.store && state.store.whatsapp_number;
+  if (!number) return "";
   return `https://wa.me/${number}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
 }
