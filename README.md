@@ -143,7 +143,7 @@ A snapshot of the database is written to the persistent disk (`/var/data/data/ba
 
 - **Prices come from the server.** The browser sends only product option ids and quantities. Totals, discounts and shipping are calculated in `app/pricing.py`.
 - **Payment is confirmed only by the gateway.** A signed webhook is verified, then the payment is fetched from the gateway's API and its amount checked before the order is marked paid. Duplicate webhooks are ignored. Orders whose webhook never arrived are re-checked every 10 minutes, and customers can press "Check again".
-- **Stock is held during checkout** (15 minutes, or 12 hours for manual UPI), so one-of-a-kind pieces can't be sold twice.
+- **Stock is held during checkout** (5 minutes, set by `RESERVATION_MINUTES`; 12 hours for manual UPI), so one-of-a-kind pieces can't be sold twice. An abandoned checkout releases its hold as soon as the customer cancels the order or starts a new one, rather than waiting for it to lapse.
 - **Accounts:** passwords are hashed with argon2id, sessions live in an HttpOnly cookie, and one-time codes expire after 10 minutes and allow 5 tries. Code requests never reveal whether an account exists.
 - **Course videos** are private files, streamed through links that expire after 4 hours and stop working if access is refunded.
 - **Roles:** *staff* can pack and ship orders and update stock. The *owner* (admin) can also change prices, refunds, courses, student access and roles. Every admin change is written to the audit log.

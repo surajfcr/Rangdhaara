@@ -98,7 +98,10 @@ class Settings:
         self.shipping_flat_paise = _env_int("SHIPPING_FLAT_PAISE", 0)
         self.free_shipping_threshold_paise = _env_int("FREE_SHIPPING_THRESHOLD_PAISE", 0)
 
-        self.reservation_minutes = _env_int("RESERVATION_MINUTES", 15)
+        # How long a checkout holds stock. Long enough to finish paying (a UPI collect request or
+        # a card OTP takes a couple of minutes), short enough that a tab closed mid-checkout doesn't
+        # leave a one-off piece reading "Sold out" for long. Raise it if payments start lapsing.
+        self.reservation_minutes = _env_int("RESERVATION_MINUTES", 5)
         self.otp_ttl_minutes = 10
         self.otp_max_attempts = 5
         self.max_video_upload_mb = _env_int("MAX_VIDEO_UPLOAD_MB", 2048)
