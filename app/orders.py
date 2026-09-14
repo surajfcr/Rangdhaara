@@ -156,10 +156,33 @@ def validate_address(address: dict | None) -> dict:
     return clean
 
 
+def release_abandoned_holds(conn, user: dict | None, email: str) -> None:
+    """Free stock still held by this customer's own unpaid orders.
+
+    Starting a fresh checkout means the earlier attempt was abandoned. Without this its hold
+    keeps the piece reading "Sold out" — to the very person trying to buy it — until it lapses,
+    and their new cart is refused because their own hold made the piece unavailable.
+
+    Manual UPI is left alone: the customer is asked to transfer at their own pace, so an unpaid
+    order there may still have money on the way.
+    """
+    stale = all_rows(
+        conn,
+        "SELECT DISTINCT o.id FROM orders o JOIN stock_reservations r ON r.order_id = o.id "
+        "WHERE o.status = 'pending_payment' AND o.payment_provider != 'manual_upi' AND r.status = 'active' "
+        "AND (o.email = ? OR (o.user_id IS NOT NULL AND o.user_id = ?))",
+        (normalize_email(email), user["id"] if user else None),
+    )
+    for row in stale:
+        cancel_order(conn, row["id"], None, "Abandoned — the customer started a new checkout")
+
+
 def create_order(conn, *, items: list[dict], coupon_code: str | None, contact: dict, address: dict | None,
                  user: dict | None, marketing_opt_in: bool, provider_name: str) -> tuple[dict, dict]:
     contact = validate_contact(contact)
     with transaction(conn):
+        # Before pricing, so the customer's own lapsed hold can't make their cart look unavailable.
+        release_abandoned_holds(conn, user, contact["email"])
         pricing = price_cart(conn, items, coupon_code, (address or {}).get("pincode"), user["id"] if user else None)
         if not pricing["lines"]:
             raise bad_request("Your cart is empty.", code="empty_cart")

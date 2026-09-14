@@ -164,6 +164,15 @@ def order_status(order_id: str, t: str | None = None, conn=Depends(get_db), user
     return orders.serialize(conn, _viewable(conn, order_id, user, t))
 
 
+@router.post("/orders/{order_id}/cancel")
+def order_cancel(order_id: str, t: str | None = None, conn=Depends(get_db), user=Depends(current_user)):
+    """Let the customer hand a piece back before their hold lapses, having changed their mind."""
+    order = _viewable(conn, order_id, user, t)
+    if order["status"] != "pending_payment":
+        raise bad_request("This order can't be cancelled any more.")
+    return orders.serialize(conn, orders.cancel_order(conn, order_id, None, "Cancelled by the customer"))
+
+
 @router.post("/orders/{order_id}/refresh")
 def order_refresh(order_id: str, t: str | None = None, conn=Depends(get_db), user=Depends(current_user)):
     """"Check again": ask the gateway directly, for when the webhook is slow or lost."""

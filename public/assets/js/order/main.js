@@ -105,6 +105,8 @@ function pendingPanel(o) {
         <button type="button" class="btn btn-outline" data-refresh><i data-lucide="refresh-cw" class="w-4 h-4"></i>Check again</button>
         ${o.payment.can_pay && o.payment.client ? html`<button type="button" class="btn btn-ghost" data-retry>Payment didn't go through? Try again</button>` : ""}
       </div>
+      <p class="text-sm text-charcoal-light border-t border-sand pt-4">Changed your mind?
+        <button type="button" class="link" data-cancel-order>Cancel this order</button> and the piece goes straight back on sale.</p>
     </section>`;
 }
 
@@ -253,6 +255,20 @@ function notFound(err) {
 on(root, "click", "[data-refresh]", async (e, el) => {
   busy(el, true, "Checking…");
   await load({ refresh: true });
+});
+
+on(root, "click", "[data-cancel-order]", async (e, el) => {
+  if (!confirm("Cancel this order? Nothing has been charged, and the piece goes back on sale straight away.")) return;
+  busy(el, true, "Cancelling…");
+  try {
+    order = await api(`/orders/${encodeURIComponent(orderId)}/cancel`, { method: "POST", query: { t: token || undefined } });
+    clearTimeout(timer);
+    paint();
+    toast("Order cancelled.", "success");
+  } catch (err) {
+    busy(el, false);
+    toast(err.message, "error");
+  }
 });
 
 on(root, "click", "[data-retry]", async (e, el) => {

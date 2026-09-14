@@ -440,6 +440,36 @@ class CheckoutTests(Case):
         sql("UPDATE stock_reservations SET expires_at = ? WHERE order_id = ?", (iso_in(minutes=-1), first.json()["order_id"]))
         self.assertEqual(checkout(buyer_b, [{"variant_id": variant, "qty": 1}], contact=other).status_code, 200)
 
+    def test_abandoning_a_checkout_puts_the_piece_back_on_sale(self):
+        variant = variant_of("rtb-cdd-01")
+        sql("UPDATE product_variants SET on_hand = 1 WHERE id = ?", (variant,))
+        me = {"name": "Second Thoughts", "email": "secondthoughts@example.com", "phone": "9866611122"}
+        c = client()
+
+        first = checkout(c, [{"variant_id": variant, "qty": 1}], contact=me)
+        self.assertEqual(first.status_code, 200, first.text)
+        first_id = first.json()["order_id"]
+        self.assertFalse(self._available(variant), "the hold takes it off sale while payment is attempted")
+
+        # Cancelling by hand hands it straight back, without waiting for the hold to lapse.
+        cancelled = post(c, f"/api/v1/orders/{first_id}/cancel?t={first.json()['token']}")
+        self.assertEqual(cancelled.status_code, 200, cancelled.text)
+        self.assertEqual(cancelled.json()["status"], "cancelled")
+        self.assertTrue(self._available(variant), "cancelling releases the hold at once")
+
+        # And simply starting over releases the earlier attempt, rather than blocking on its hold.
+        second = checkout(c, [{"variant_id": variant, "qty": 1}], contact=me)
+        self.assertEqual(second.status_code, 200, second.text)
+        third = checkout(c, [{"variant_id": variant, "qty": 1}], contact=me)
+        self.assertEqual(third.status_code, 200, third.text)
+        self.assertEqual(value("SELECT status FROM orders WHERE id = ?", (second.json()["order_id"],)), "cancelled")
+
+    def _available(self, variant_id) -> bool:
+        return bool(value(
+            "SELECT on_hand - COALESCE((SELECT SUM(qty) FROM stock_reservations WHERE variant_id = v.id "
+            "AND status = 'active' AND expires_at > ?), 0) FROM product_variants v WHERE v.id = ?",
+            (iso_in(minutes=0), variant_id)))
+
     def test_customer_input_is_escaped_in_emails(self):
         c = client()
         contact = {"name": "<img src=x onerror=alert(1)>", "email": "xss@example.com", "phone": "9866666666"}
