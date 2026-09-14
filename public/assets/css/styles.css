@@ -63,7 +63,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); text-wrap: balance; }
 
 /* Hero visual: two hand-picked pieces staged like a little gallery wall, not a shop grid —
    the actual products live in the sections below, so this side is purely mood. */
-.hero-art { position: relative; width: 100%; aspect-ratio: 4 / 5; max-width: 30rem; margin: 0 auto; }
+/* overflow: hidden clips the two blobs below at this box's edge — they're drawn to bleed
+   slightly past it on purpose, which otherwise adds a sliver of page-wide horizontal scroll. */
+.hero-art { position: relative; width: 100%; aspect-ratio: 4 / 5; max-width: 30rem; margin: 0 auto; overflow: hidden; }
 .hero-art-blob {
   position: absolute; border-radius: 50%; filter: blur(2px); z-index: 0;
 }
@@ -78,12 +80,10 @@ h1, h2, h3, h4 { font-family: var(--font-heading); text-wrap: balance; }
 .hero-frame img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: .15rem; }
 .hero-frame-1 { width: 66%; aspect-ratio: 4 / 5; top: 4%; left: 2%; transform: rotate(-3deg); z-index: 2; }
 .hero-frame-2 { width: 46%; aspect-ratio: 1 / 1; bottom: 6%; right: 0; transform: rotate(4deg); }
-
-.hero-sunflower {
-  position: absolute; top: 6%; right: 8%; font-size: 2.1rem; z-index: 3;
-  filter: drop-shadow(0 6px 10px rgba(31, 36, 33, 0.18));
-  transform: rotate(8deg);
-}
+/* The sunflower painting itself is a tall crop, so a squarer 3:4 frame (rather than
+   frame-1's fuller 4:5) keeps it from towering over the other two pieces at this width. */
+.hero-frame-3 { width: 32%; aspect-ratio: 3 / 4; top: 0; right: 0; transform: rotate(6deg); z-index: 2; }
+.hero-frame-3 img { object-position: 50% 30%; }
 .hero-tag {
   position: absolute; left: -.5rem; bottom: 14%; z-index: 3;
   background: var(--color-charcoal); color: #fff; font-family: var(--font-heading); font-style: italic;
