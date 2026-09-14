@@ -632,6 +632,27 @@ class AdminTests(Case):
         exported = owner.get("/api/v1/admin/revenue.csv?period=day&span=7").text
         self.assertIn("'=HYPERLINK(1)", exported)
 
+    def test_a_piece_can_be_moved_into_the_kits_section(self):
+        make_user("mover@example.com", role="admin")
+        owner = client()
+        login(owner, "mover@example.com")
+        piece = post(owner, "/api/v1/admin/products", {"kind": "physical", "title": "Mis-filed Calendar",
+                                                       "category": "clay-desk-decor", "price_paise": 99900, "on_hand": 2}).json()
+        self.assertEqual(piece["category"], "clay-desk-decor")
+
+        moved = owner.patch(f"/api/v1/admin/products/{piece['id']}", json={"kind": "kit"}, headers=H).json()
+        self.assertEqual(moved["kind"], "kit")
+        # A kit sells from its own section, so the category that filed it under finished pieces goes too.
+        self.assertEqual(moved["category"], "")
+        self.assertEqual(moved["variants"][0]["on_hand"], 2, "stock survives the move")
+
+        back = owner.patch(f"/api/v1/admin/products/{piece['id']}", json={"kind": "physical"}, headers=H).json()
+        self.assertEqual(back["kind"], "physical")
+
+        # Courses and workshops carry lessons and sessions, so they aren't movable this way.
+        course = post(owner, "/api/v1/admin/products", {"kind": "course", "title": "Unmovable Masterclass", "price_paise": 50000}).json()
+        self.assertEqual(owner.patch(f"/api/v1/admin/products/{course['id']}", json={"kind": "kit"}, headers=H).status_code, 400)
+
     def test_products_are_deleted_or_archived(self):
         make_user("remover@example.com", role="admin")
         owner = client()

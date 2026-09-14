@@ -390,6 +390,10 @@ def create_product(body: ProductCreateIn, request: Request, user=Depends(require
 
 class ProductPatchIn(BaseModel):
     title: str | None = Field(default=None, min_length=2, max_length=140)
+    # Only between these two: both are stocked goods with the same shape, so moving one to the
+    # other section is just a label. Courses carry lessons and workshops carry sessions, so
+    # turning something into one of those isn't a field change and isn't offered here.
+    kind: Literal["physical", "kit"] | None = None
     slug: str | None = Field(default=None, max_length=70)
     category: str | None = Field(default=None, max_length=40)
     description: str | None = Field(default=None, max_length=4000)
@@ -416,6 +420,12 @@ def update_product(product_id: str, body: ProductPatchIn, request: Request, user
             updates[field] = getattr(body, field).strip()
     if "title" in sent and body.title:
         updates["title"] = clean_text(body.title, 140)
+    if "kind" in sent and body.kind is not None and body.kind != product["kind"]:
+        if product["kind"] not in ("physical", "kit"):
+            raise bad_request("Only ready-to-buy pieces and DIY kits can be moved between sections.")
+        updates["kind"] = body.kind
+        if body.kind == "kit":
+            updates["category"] = ""  # kits sell from their own section, so a category would only misfile them
     if "slug" in sent and body.slug:
         updates["slug"] = _slug(conn, body.slug, product_id)
     for field in ("details", "includes"):

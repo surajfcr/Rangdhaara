@@ -212,7 +212,12 @@ async function detail(el, ctx, id) {
           <div class="panel-head"><h2 class="font-semibold">Details</h2>${owner ? "" : html`<span class="text-xs text-charcoal-light">Only the owner can edit details</span>`}</div>
           <fieldset class="panel-body grid sm:grid-cols-2 gap-4" ${owner ? "" : "disabled"}>
             <div class="sm:col-span-2">${field("Name", html`<input class="input" name="title" value="${p.title}" required>`)}</div>
-            ${p.kind === "physical" ? field("Category", html`<select class="input" name="category"><option value="">None</option>${meta.categories.map((c) => html`<option value="${c.id}" ${c.id === p.category ? "selected" : ""}>${c.name}</option>`)}</select>`, "Groups the piece in the shop's filter row.") : ""}
+            ${["physical", "kit"].includes(p.kind) ? html`
+              ${field("Type", html`<select class="input" name="kind">
+                <option value="physical" ${p.kind === "physical" ? "selected" : ""}>Ready-to-buy piece</option>
+                <option value="kit" ${p.kind === "kit" ? "selected" : ""}>DIY kit</option></select>`,
+                "Which section of the shop it sells from.")}
+              <div data-physical-only>${field("Category", html`<select class="input" name="category"><option value="">None</option>${meta.categories.map((c) => html`<option value="${c.id}" ${c.id === p.category ? "selected" : ""}>${c.name}</option>`)}</select>`, "Groups the piece in the shop's filter row.")}</div>` : ""}
             ${field("Badge", html`<input class="input" name="badge" value="${p.badge}" placeholder="e.g. Gift set">`, "A short label on the product photo.")}
             <div class="sm:col-span-2">${field("Description", html`<textarea class="input" name="description" rows="4">${p.description}</textarea>`)}</div>
             ${["physical", "kit"].includes(p.kind) ? html`
@@ -284,7 +289,10 @@ async function detail(el, ctx, id) {
     try {
       if (form.matches("[data-details]")) {
         const v = Object.fromEntries(new FormData(form));
-        const body = { title: v.title, category: v.category, badge: v.badge, description: v.description };
+        const body = { title: v.title, badge: v.badge, description: v.description };
+        // The category field stays in the form when the type is switched to a kit — it's only
+        // hidden — so the value is dropped here rather than trusted.
+        if (form.kind) Object.assign(body, { kind: v.kind, category: v.kind === "physical" ? v.category : "" });
         if ("material" in v) Object.assign(body, { material: v.material, details: lines(v.details),
           compare_at_paise: v.compare_at ? toPaise(v.compare_at) : null });
         if ("includes" in v) Object.assign(body, { includes: lines(v.includes), tools_info: v.tools_info });
