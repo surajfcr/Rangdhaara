@@ -1,7 +1,11 @@
 # Render Blueprint — see README.md "Deploying to Render" for the full walkthrough.
 # Render reads this automatically when you create a Blueprint from this repo.
-# Fields marked `sync: false` are secrets you paste into the Render dashboard yourself;
-# they are never stored in this file or in git.
+#
+# IMPORTANT: every `value:` below is re-applied to the live service each time this file is
+# pushed, overwriting whatever the dashboard says. A setting changed in the dashboard must be
+# changed here too, or the next push silently reverts it. Anything the dashboard alone should
+# own — secrets, and settings changed as the studio grows — is marked `sync: false` instead,
+# which leaves the live value alone and keeps it out of git.
 services:
   - type: web
     name: rangdhaara
@@ -44,10 +48,19 @@ services:
         value: rangdhaara_
       - key: ORIGIN_PINCODE
         value: "431001"
-      # Payments: manual UPI to start (no gateway account needed yet).
-      # Switch PAYMENT_PROVIDER to razorpay or cashfree once that's set up — see the README.
+      # Payments run through Razorpay: payment confirms itself, stock drops and the emails go
+      # out with no one watching a bank statement. manual_upi is the fallback for a studio
+      # without a gateway account — swapping back means setting UPI_VPA and nothing else.
       - key: PAYMENT_PROVIDER
-        value: manual_upi
+        value: razorpay
+      # Live keys and the webhook secret from the Razorpay dashboard. Declared so a blueprint
+      # sync leaves them alone; the values only ever exist in Render's own settings.
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
       - key: UPI_VPA
         sync: false
       - key: UPI_PAYEE_NAME
