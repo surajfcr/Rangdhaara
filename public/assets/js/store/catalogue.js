@@ -70,8 +70,10 @@ function priceLine(p) {
   return html`<span class="flex items-baseline gap-1.5"><span class="text-lg font-bold text-charcoal tabular-nums">${several ? "From " : ""}${rupees(p.price_paise)}</span>${compareAt(p, p.price_paise)}</span>`;
 }
 
+// Only kits carry ratings: a kit is made many times over, but a finished piece is one of a kind,
+// so a pile of reviews against it would describe pieces that no longer exist.
 function rating(p) {
-  if (!p.rating) return "";
+  if (!p.rating || p.kind !== "kit") return "";
   return html`<span class="flex items-center gap-1 text-xs font-semibold text-amber-700" aria-label="Rated ${p.rating} out of 5 from ${p.reviews_count} reviews">
     <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>${p.rating.toFixed(1)}<span class="font-normal text-charcoal-light">(${p.reviews_count})</span></span>`;
 }
