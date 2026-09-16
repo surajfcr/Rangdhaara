@@ -68,7 +68,7 @@ function subline(o) {
   }
   if (PAID.includes(o.status)) return `A receipt is on its way to ${o.customer.email}.`;
   if (o.status === "expired") return "The payment window closed before a payment was confirmed. If you did pay, it will appear here once the gateway confirms it.";
-  if (o.status === "cancelled") return "Nothing more is needed. You can rebuild the cart to order again.";
+  if (o.status === "cancelled") return "Nothing was charged, and the pieces are back on sale. Rebuild the cart below to order again.";
   if (o.status === "refunded") return `A refund of ${rupees(o.total_paise)} was issued on ${dateTime(o.refunded_at)}. Banks usually take 5–7 business days to show it.`;
   return "";
 }

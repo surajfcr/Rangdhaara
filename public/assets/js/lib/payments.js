@@ -1,5 +1,6 @@
 // Hands the customer to whichever gateway the server started a payment with.
 // The browser never reports success: every path ends on the order page, which asks the server.
+import { api } from "./api.js";
 
 const TOKENS_KEY = "rg_order_tokens";
 
@@ -62,7 +63,17 @@ export async function launchPayment({ provider, client, orderId, token }) {
       prefill: client.prefill,
       theme: { color: "#C86D51" },
       handler: () => { location.href = back; },
-      modal: { ondismiss: () => { location.href = back; } },
+      // Leaving the payment window means the piece isn't being bought, so it goes back on sale
+      // now rather than staying held until the reservation lapses. If it can't be released the
+      // customer loses nothing: the hold expires by itself a few minutes later.
+      modal: {
+        ondismiss: async () => {
+          try {
+            await api(`/orders/${encodeURIComponent(orderId)}/cancel`, { method: "POST", query: { t: token || undefined } });
+          } catch { /* already paid, already cancelled, or offline — the order page will say which */ }
+          location.href = back;
+        },
+      },
     });
     checkout.open();
     return;
